@@ -8,7 +8,7 @@ use App\ValueObject\Money;
 use Systemeio\TestForCandidates\PaymentProcessor\PaypalPaymentProcessor;
 use Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor;
 
-final readonly class PaymentService
+readonly class PaymentService
 {
     public function __construct(
         private PaypalPaymentProcessor $paypal,

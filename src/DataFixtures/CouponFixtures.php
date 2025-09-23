@@ -33,9 +33,4 @@ class CouponFixtures extends Fixture
 
         $manager->flush();
     }
-
-    public function getDependencies(): array
-    {
-        return [ProductFixtures::class];
-    }
 }

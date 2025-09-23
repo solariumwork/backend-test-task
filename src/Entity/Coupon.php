@@ -10,7 +10,7 @@ use InvalidArgumentException;
 
 #[ORM\Entity(repositoryClass: CouponRepository::class)]
 #[ORM\Table(name: 'coupon')]
-final class Coupon
+class Coupon
 {
     public const string TYPE_PERCENT = 'percent';
     public const string TYPE_FIXED = 'fixed';

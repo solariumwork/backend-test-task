@@ -17,7 +17,10 @@ class ProductFixtures extends Fixture
         ];
 
         foreach ($products as $i => $productData) {
-            $product = new Product($productData['name'], $productData['price']);
+            $product = new Product(
+                $productData['name'],
+                $productData['price']
+            );
 
             $this->addReference('product_'.$i, $product);
 

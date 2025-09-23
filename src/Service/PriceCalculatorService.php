@@ -8,7 +8,7 @@ use App\Entity\Product;
 use App\Entity\Coupon;
 use App\ValueObject\Money;
 
-final class PriceCalculatorService
+class PriceCalculatorService
 {
     public function calculate(Product $product, string $taxNumber, ?Coupon $coupon = null): Money
     {
@@ -32,7 +32,6 @@ final class PriceCalculatorService
             $totalCents = max(0, $totalCents);
         }
 
-
         $totalCents = (int) round($totalCents * (1 + $taxRate));
 
         return new Money($totalCents, $product->getPrice()->getCurrency());
@@ -40,11 +39,13 @@ final class PriceCalculatorService
 
     private function getTaxRate(string $taxNumber): ?float
     {
+        $taxNumber = trim($taxNumber);
+
         return match (true) {
-            preg_match('/^DE\d{9}$/', $taxNumber) => 0.19,
-            preg_match('/^IT\d{11}$/', $taxNumber) => 0.22,
-            preg_match('/^FR[A-Z]{2}\d{9}$/', $taxNumber) => 0.20,
-            preg_match('/^GR\d{9}$/', $taxNumber) => 0.24,
+            preg_match('/^DE\d{9}$/', $taxNumber) === 1 => 0.19,
+            preg_match('/^IT\d{11}$/', $taxNumber) === 1 => 0.22,
+            preg_match('/^FR[A-Z]{2}\d{9}$/', $taxNumber) === 1 => 0.20,
+            preg_match('/^GR\d{9}$/', $taxNumber) === 1 => 0.24,
             default => null,
         };
     }
