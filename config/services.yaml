@@ -20,5 +20,14 @@ services:
             - '../src/Entity/'
             - '../src/Kernel.php'
 
+    App\ArgumentResolver\RequestDtoResolver:
+      tags:
+        - { name: controller.argument_value_resolver, priority: 100 }
+
+    App\Controller\CalculatePriceController:
+      tags: [ 'controller.service_arguments' ]
+    App\Controller\PurchaseController:
+      tags: [ 'controller.service_arguments' ]
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
