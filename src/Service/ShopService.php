@@ -9,22 +9,23 @@ use App\DTO\PurchaseRequest;
 use App\Entity\Product;
 use App\Entity\Coupon;
 use App\Entity\Order;
+use App\ValueObject\Money;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class ShopService
+final readonly class ShopService
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
-        private readonly PriceCalculatorService $calculator,
-        private readonly PaymentService $paymentService
+        private EntityManagerInterface $em,
+        private PriceCalculatorService $calculator,
+        private PaymentService         $paymentService
     ) {}
 
-    public function calculatePrice(CalculatePriceRequest $dto): \App\ValueObject\Money
+    public function calculatePrice(CalculatePriceRequest $dto): Money
     {
         $product = $this->getProduct($dto->product);
         $coupon = $dto->couponCode ? $this->getCoupon($dto->couponCode) : null;
 
-        return $this->calculator->calculate($product, $coupon, $dto->taxNumber);
+        return $this->calculator->calculate($product, $dto->taxNumber, $coupon);
     }
 
     public function purchase(PurchaseRequest $dto): Order
@@ -32,7 +33,7 @@ final class ShopService
         $product = $this->getProduct($dto->product);
         $coupon = $dto->couponCode ? $this->getCoupon($dto->couponCode) : null;
 
-        $total = $this->calculator->calculate($product, $coupon, $dto->taxNumber);
+        $total = $this->calculator->calculate($product, $dto->taxNumber, $coupon);
 
         $this->paymentService->pay($total, $dto->paymentProcessor);
 
