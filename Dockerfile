@@ -27,4 +27,4 @@ WORKDIR /app
 
 EXPOSE 8337
 
-CMD ["php", "-S", "0.0.0.0:8337", "-t", "public"]
+CMD ["php", "-S", "0.0.0.0:8337", "-t", "public", "public/index.php"]

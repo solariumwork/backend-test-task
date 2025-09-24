@@ -6,11 +6,12 @@ namespace App\Controller;
 
 use App\DTO\PurchaseRequest;
 use App\Service\ShopServiceInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/purchase', methods: ['POST'])]
+#[Route('/api/purchase', methods: ['POST'])]
 final readonly class PurchaseController
 {
     public function __construct(private ShopServiceInterface $shopService)
@@ -19,34 +20,29 @@ final readonly class PurchaseController
     }
 
     #[OA\Post(
-        path: '/purchase',
+        path: '/api/purchase',
+        description: 'Processes a purchase, applying taxes and optional coupon discounts.',
         summary: 'Make a purchase for a product',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(ref: PurchaseRequest::class)
+            content: new OA\JsonContent(ref: new Model(type: PurchaseRequest::class))
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Returns the created order',
+                description: 'Returns the order details including ID, total amount, and currency',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'orderId', description: 'Unique order ID', type: 'string'),
-                        new OA\Property(property: 'total', description: 'Total price in euros', type: 'float'),
-                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string')
+                        new OA\Property(property: 'orderId', description: 'Unique ID of the order', type: 'integer', example: 101),
+                        new OA\Property(property: 'total', description: 'Total amount in euros', type: 'number', format: 'float', example: 49.99),
+                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string', example: 'EUR')
                     ],
                     type: 'object'
                 )
             ),
             new OA\Response(
-                response: 422,
-                description: 'Validation or purchase error',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'error', description: 'Error message', type: 'string')
-                    ],
-                    type: 'object'
-                )
+                response: 400,
+                description: 'Validation error'
             )
         ]
     )]

@@ -6,11 +6,12 @@ namespace App\Controller;
 
 use App\DTO\CalculatePriceRequest;
 use App\Service\ShopServiceInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/calculate-price', methods: ['POST'])]
+#[Route('/api/calculate-price', methods: ['POST'])]
 final readonly class CalculatePriceController
 {
     public function __construct(private ShopServiceInterface $shopService)
@@ -19,33 +20,28 @@ final readonly class CalculatePriceController
     }
 
     #[OA\Post(
-        path: '/calculate-price',
+        path: '/api/calculate-price',
+        description: 'Calculates the total price including taxes and optional coupon discounts.',
         summary: 'Calculate total price for a product',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(ref: CalculatePriceRequest::class)
+            content: new OA\JsonContent(ref: new Model(type: CalculatePriceRequest::class))
         ),
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Returns calculated price',
+                description: 'Returns the calculated price and currency',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'price', description: 'Total price in euros', type: 'float'),
-                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string')
+                        new OA\Property(property: 'price', description: 'Total price', type: 'number', format: 'float'),
+                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string', example: 'EUR')
                     ],
                     type: 'object'
                 )
             ),
             new OA\Response(
-                response: 422,
-                description: 'Validation or calculation error',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'error', description: 'Error message', type: 'string')
-                    ],
-                    type: 'object'
-                )
+                response: 400,
+                description: 'Validation error'
             )
         ]
     )]

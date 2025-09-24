@@ -7,25 +7,21 @@ namespace App\DTO;
 use Symfony\Component\Validator\Constraints as Assert;
 use OpenApi\Attributes as OA;
 
-#[OA\Schema(
-    schema: 'PurchaseRequest',
-    description: 'DTO for making a purchase'
-)]
 final class PurchaseRequest implements RequestDtoInterface
 {
     #[Assert\NotBlank]
     #[Assert\Type('integer')]
     #[OA\Property(
-        description: 'Product ID to purchase',
+        description: 'ID of the product',
         type: 'integer',
-        example: 1
+        example: 123
     )]
     public int $product;
 
     #[Assert\NotBlank]
     #[Assert\Type('string')]
     #[OA\Property(
-        description: 'Tax number for calculation',
+        description: 'Tax number of the customer',
         type: 'string',
         example: 'DE123456789'
     )]
@@ -33,9 +29,9 @@ final class PurchaseRequest implements RequestDtoInterface
 
     #[Assert\Type('string')]
     #[OA\Property(
-        description: 'Optional coupon code',
+        description: 'Optional coupon code for discount',
         type: 'string',
-        example: 'COUPON10',
+        example: 'SUMMER2025',
         nullable: true
     )]
     public ?string $couponCode = null;
@@ -43,9 +39,9 @@ final class PurchaseRequest implements RequestDtoInterface
     #[Assert\NotBlank]
     #[Assert\Type('string')]
     #[OA\Property(
-        description: 'Payment processor (e.g., paypal, stripe)',
+        description: 'Payment processor to use (e.g., Stripe, PayPal)',
         type: 'string',
-        example: 'paypal'
+        example: 'Stripe'
     )]
     public string $paymentProcessor;
 }

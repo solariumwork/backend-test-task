@@ -13,7 +13,7 @@ use App\Repository\CouponRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
 use App\ValueObject\Money;
 
-final readonly class ShopService
+final readonly class ShopService implements ShopServiceInterface
 {
     public function __construct(
         private ProductRepositoryInterface $productRepository,
