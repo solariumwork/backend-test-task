@@ -25,8 +25,8 @@ final class PurchaseRequest implements RequestDtoInterface
     #[Assert\NotBlank]
     #[Assert\Type('string')]
     #[OA\Property(
-        type: 'string',
         description: 'Tax number for calculation',
+        type: 'string',
         example: 'DE123456789'
     )]
     public string $taxNumber;

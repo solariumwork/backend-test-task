@@ -30,4 +30,9 @@ final readonly class Money
     {
         return $this->currency;
     }
+
+    public function getEuros(): float
+    {
+        return $this->cents / 100;
+    }
 }

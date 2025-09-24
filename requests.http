@@ -1,16 +1,16 @@
 ### Calculate Price
-POST http://127.0.0.1:8337/calculate-price
+POST http://127.0.0.1:8337/calculate-price?XDEBUG_SESSION_START=PHPSTORM
 Accept: application/json
 Content-Type: application/json
 
 {
   "product": 1,
   "taxNumber": "DE123456789",
-  "couponCode": "D15"
+  "couponCode": "P10"
 }
 
 ### Execute Purchase
-POST http://127.0.0.1:8337/purchase
+POST http://127.0.0.1:8337/purchase?XDEBUG_SESSION_START=PHPSTORM
 Accept: application/json
 Content-Type: application/json
 

@@ -13,16 +13,16 @@ use Doctrine\ORM\Mapping as ORM;
 final class Order
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 64)]
-    private string $id;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: "integer")]
+    private ?int $id = null;
 
     #[ORM\Column(name: 'product_id', type: 'integer')]
     private int $productId;
 
-    // Храним связь на купон — обеспечивает целостность и удобные JOIN'ы.
     #[ORM\ManyToOne(targetEntity: Coupon::class)]
     #[ORM\JoinColumn(name: 'coupon_id', referencedColumnName: 'code', nullable: true)]
-    private ?Coupon $coupon = null;
+    private ?Coupon $coupon;
 
     #[ORM\Column(name: 'tax_number', type: 'string', length: 64)]
     private string $taxNumber;
@@ -30,32 +30,27 @@ final class Order
     #[ORM\Column(name: 'payment_processor', type: 'string', length: 32)]
     private string $paymentProcessor;
 
-    // Храним исходную цену и итоговую сумму как Money embeddable.
     #[ORM\Embedded(class: Money::class, columnPrefix: 'price_')]
-    private Money $price;
+    private Money $originalPrice;
 
     #[ORM\Embedded(class: Money::class, columnPrefix: 'total_')]
     private Money $total;
 
     public function __construct(
-        string $id,
-        int $productId,
-        Money $price,
+        Money $originalPrice,
         Money $total,
         string $taxNumber,
         string $paymentProcessor,
         ?Coupon $coupon = null
     ) {
-        $this->id = $id;
-        $this->productId = $productId;
-        $this->price = $price;
+        $this->originalPrice = $originalPrice;
         $this->total = $total;
         $this->taxNumber = $taxNumber;
         $this->paymentProcessor = $paymentProcessor;
         $this->coupon = $coupon;
     }
 
-    public function getId(): string
+    public function getId(): int
     {
         return $this->id;
     }
@@ -65,18 +60,8 @@ final class Order
         return $this->productId;
     }
 
-    public function getPrice(): Money
-    {
-        return $this->price;
-    }
-
     public function getTotal(): Money
     {
         return $this->total;
-    }
-
-    public function getCoupon(): ?Coupon
-    {
-        return $this->coupon;
     }
 }

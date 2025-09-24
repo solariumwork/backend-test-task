@@ -5,69 +5,42 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\DTO\CalculatePriceRequest;
+use App\DTO\CreateOrderDTO;
 use App\DTO\PurchaseRequest;
-use App\Entity\Product;
-use App\Entity\Coupon;
 use App\Entity\Order;
+use App\Repository\ProductRepositoryInterface;
+use App\Repository\CouponRepositoryInterface;
+use App\Repository\OrderRepositoryInterface;
 use App\ValueObject\Money;
-use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class ShopService
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        private ProductRepositoryInterface $productRepository,
+        private CouponRepositoryInterface $couponRepository,
         private PriceCalculatorService $calculator,
-        private PaymentService         $paymentService
+        private PaymentService $paymentService,
+        private OrderRepositoryInterface $orderRepository
     ) {}
 
     public function calculatePrice(CalculatePriceRequest $dto): Money
     {
-        $product = $this->getProduct($dto->product);
-        $coupon = $dto->couponCode ? $this->getCoupon($dto->couponCode) : null;
+        $product = $this->productRepository->findOrFail($dto->product);
+        $coupon = $dto->couponCode ? $this->couponRepository->findActiveOrFail($dto->couponCode) : null;
 
         return $this->calculator->calculate($product, $dto->taxNumber, $coupon);
     }
 
     public function purchase(PurchaseRequest $dto): Order
     {
-        $product = $this->getProduct($dto->product);
-        $coupon = $dto->couponCode ? $this->getCoupon($dto->couponCode) : null;
+        $product = $this->productRepository->findOrFail($dto->product);
+        $coupon = $dto->couponCode ? $this->couponRepository->findActiveOrFail($dto->couponCode) : null;
 
         $total = $this->calculator->calculate($product, $dto->taxNumber, $coupon);
-
         $this->paymentService->pay($total, $dto->paymentProcessor);
 
-        $order = new Order(
-            id: uniqid('order_', true),
-            productId: $product->getId(),
-            price: $product->getPrice(),
-            total: $total,
-            taxNumber: $dto->taxNumber,
-            paymentProcessor: $dto->paymentProcessor,
-            coupon: $coupon
-        );
+        $orderDto = CreateOrderDTO::fromPurchaseRequest($dto, $product, $total, $coupon);
 
-        $this->em->persist($order);
-        $this->em->flush();
-
-        return $order;
-    }
-
-    private function getProduct(int $id): Product
-    {
-        $product = $this->em->getRepository(Product::class)->find($id);
-        if (!$product instanceof Product) {
-            throw new \InvalidArgumentException('Product not found');
-        }
-        return $product;
-    }
-
-    private function getCoupon(string $code): ?Coupon
-    {
-        $coupon = $this->em->getRepository(Coupon::class)->find($code);
-        if (!$coupon instanceof Coupon || !$coupon->isActive()) {
-            throw new \InvalidArgumentException('Invalid or inactive coupon');
-        }
-        return $coupon;
+        return $this->orderRepository->create($orderDto);
     }
 }

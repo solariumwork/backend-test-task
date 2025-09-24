@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\DTO\CalculatePriceRequest;
-use App\Service\ShopService;
+use App\Service\ShopServiceInterface;
+use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use OpenApi\Attributes as OA;
 
 #[Route('/calculate-price', methods: ['POST'])]
 final readonly class CalculatePriceController
 {
-    public function __construct(private ShopService $shopService) {}
+    public function __construct(private ShopServiceInterface $shopService)
+    {
+        //
+    }
 
     #[OA\Post(
         path: '/calculate-price',
@@ -28,7 +31,7 @@ final readonly class CalculatePriceController
                 description: 'Returns calculated price',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'price', description: 'Total price in cents', type: 'integer'),
+                        new OA\Property(property: 'price', description: 'Total price in euros', type: 'float'),
                         new OA\Property(property: 'currency', description: 'Currency code', type: 'string')
                     ],
                     type: 'object'
@@ -51,7 +54,7 @@ final readonly class CalculatePriceController
         $total = $this->shopService->calculatePrice($dto);
 
         return new JsonResponse([
-            'price' => $total->getCents(),
+            'price' => $total->getEuros(),
             'currency' => $total->getCurrency(),
         ]);
     }

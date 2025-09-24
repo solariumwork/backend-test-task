@@ -6,6 +6,7 @@ namespace App\Tests;
 
 use App\Service\PaymentService;
 use App\ValueObject\Money;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Systemeio\TestForCandidates\PaymentProcessor\PaypalPaymentProcessor;
 use Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor;
@@ -13,10 +14,10 @@ use Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor;
 class PaymentServiceTest extends TestCase
 {
     private PaymentService $paymentService;
-    /** @var PaypalPaymentProcessor&\PHPUnit\Framework\MockObject\MockObject */
+    /** @var PaypalPaymentProcessor&MockObject */
     private $paypalMock;
 
-    /** @var StripePaymentProcessor&\PHPUnit\Framework\MockObject\MockObject */
+    /** @var StripePaymentProcessor&MockObject */
     private $stripeMock;
 
     protected function setUp(): void
@@ -32,8 +33,8 @@ class PaymentServiceTest extends TestCase
 
     public function testPaypalPaymentWithPercentCoupon(): void
     {
-        $originalPrice = 100.0;
-        $discountPercent = 10.0;
+        $originalPrice = 10000;
+        $discountPercent = 1000;
         $expectedCents = (int)(($originalPrice * (1 - $discountPercent / 100)) * 100);
 
         $money = new Money($expectedCents);
@@ -47,15 +48,15 @@ class PaymentServiceTest extends TestCase
 
     public function testStripePaymentWithFixedCoupon(): void
     {
-        $originalPrice = 50.0;
-        $discountFixed = 5.0;
-        $expectedCents = (int)(($originalPrice - $discountFixed) * 100);
+        $originalPrice = 5000;
+        $discountFixed = 500;
+        $expectedCents = (($originalPrice - $discountFixed) * 100);
 
         $money = new Money($expectedCents);
 
         $this->stripeMock->expects($this->once())
             ->method('processPayment')
-            ->with($expectedCents);
+            ->with($money->getEuros());
 
         $this->paymentService->pay($money, 'stripe');
     }
@@ -68,7 +69,7 @@ class PaymentServiceTest extends TestCase
 
         $this->stripeMock->expects($this->once())
             ->method('processPayment')
-            ->with($expectedCents);
+            ->with($money->getEuros());
 
         $this->paymentService->pay($money, 'stripe');
     }

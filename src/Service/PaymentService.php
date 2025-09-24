@@ -8,7 +8,7 @@ use App\ValueObject\Money;
 use Systemeio\TestForCandidates\PaymentProcessor\PaypalPaymentProcessor;
 use Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor;
 
-readonly class PaymentService
+readonly class PaymentService implements PaymentServiceInterface
 {
     public function __construct(
         private PaypalPaymentProcessor $paypal,
@@ -21,7 +21,7 @@ readonly class PaymentService
     {
         match (strtolower($processor)) {
             'paypal' => $this->paypal->pay($money->getCents()),
-            'stripe' => $this->stripe->processPayment($money->getCents()),
+            'stripe' => $this->stripe->processPayment($money->getEuros()),
             default => throw new \InvalidArgumentException('Unknown payment processor'),
         };
     }

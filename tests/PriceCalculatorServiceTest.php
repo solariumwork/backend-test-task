@@ -56,7 +56,7 @@ class PriceCalculatorServiceTest extends TestCase
     public function testFixedCouponGreaterThanPrice(): void
     {
         $product = new Product('CheapItem', new Money(300));
-        $coupon = new Coupon('D500', Coupon::TYPE_FIXED, 5000);
+        $coupon = new Coupon('D500', Coupon::TYPE_FIXED, 500);
 
         $money = $this->calculator->calculate($product, 'GR123456789', $coupon);
 

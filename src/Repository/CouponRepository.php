@@ -8,10 +8,20 @@ use App\Entity\Coupon;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-final class CouponRepository extends ServiceEntityRepository
+final class CouponRepository extends ServiceEntityRepository implements CouponRepositoryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Coupon::class);
+    }
+
+    public function findActiveOrFail(string $code): Coupon
+    {
+        $coupon = $this->find($code);
+        if (!$coupon instanceof Coupon || !$coupon->isActive()) {
+            throw new \InvalidArgumentException('Invalid or inactive coupon');
+        }
+
+        return $coupon;
     }
 }

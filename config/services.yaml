@@ -33,3 +33,11 @@ services:
     # please note that last definitions always *replace* previous ones
     Systemeio\TestForCandidates\PaymentProcessor\PaypalPaymentProcessor: ~
     Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor: ~
+
+    App\Repository\ProductRepositoryInterface: '@App\Repository\ProductRepository'
+    App\Repository\CouponRepositoryInterface: '@App\Repository\CouponRepository'
+    App\Repository\OrderRepositoryInterface: '@App\Repository\OrderRepository'
+
+    App\Service\ShopServiceInterface: '@App\Service\ShopService'
+    App\Service\PaymentServiceInterface: '@App\Service\PaymentService'
+    App\Service\PriceCalculatorServiceInterface: '@App\Service\PriceCalculatorService'
