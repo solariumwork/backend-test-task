@@ -115,7 +115,7 @@ final class ShopServiceTest extends TestCase
     {
         $product = new Product('Iphone', new Money(10000));
         $coupon = new Coupon('D10', Coupon::TYPE_PERCENT, 10);
-        $order = new Order(new Money(10000), new Money(10710), 'DE123456789', 'paypal', $coupon);
+        $order = new Order($product, new Money(10000), new Money(10710), 'DE123456789', 'paypal', $coupon);
 
         $dto = new PurchaseRequest();
         $dto->product = 1;

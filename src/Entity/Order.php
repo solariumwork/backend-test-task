@@ -17,8 +17,9 @@ final class Order
     #[ORM\Column(type: "integer")]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'product_id', type: 'integer')]
-    private int $productId;
+    #[ORM\ManyToOne(targetEntity: Product::class)]
+    #[ORM\JoinColumn(name: 'product_id', referencedColumnName: 'id', nullable: false)]
+    private Product $product;
 
     #[ORM\ManyToOne(targetEntity: Coupon::class)]
     #[ORM\JoinColumn(name: 'coupon_id', referencedColumnName: 'code', nullable: true)]
@@ -37,12 +38,14 @@ final class Order
     private Money $total;
 
     public function __construct(
+        Product $product,
         Money $originalPrice,
         Money $total,
         string $taxNumber,
         string $paymentProcessor,
         ?Coupon $coupon = null
     ) {
+        $this->product = $product;
         $this->originalPrice = $originalPrice;
         $this->total = $total;
         $this->taxNumber = $taxNumber;
@@ -50,14 +53,9 @@ final class Order
         $this->coupon = $coupon;
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getProductId(): int
-    {
-        return $this->productId;
     }
 
     public function getTotal(): Money

@@ -1,5 +1,5 @@
 ### Calculate Price
-POST http://127.0.0.1:8337/calculate-price?XDEBUG_SESSION_START=PHPSTORM
+POST http://127.0.0.1:8337/api/calculate-price?XDEBUG_SESSION_START=PHPSTORM
 Accept: application/json
 Content-Type: application/json
 
@@ -10,7 +10,7 @@ Content-Type: application/json
 }
 
 ### Execute Purchase
-POST http://127.0.0.1:8337/purchase?XDEBUG_SESSION_START=PHPSTORM
+POST http://127.0.0.1:8337/api/purchase?XDEBUG_SESSION_START=PHPSTORM
 Accept: application/json
 Content-Type: application/json
 
