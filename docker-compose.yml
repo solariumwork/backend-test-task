@@ -9,6 +9,7 @@ services:
             - "8337:8337"
         volumes:
             - .:/app:rw
+            - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
         environment:
             - APP_ENV=dev
 
