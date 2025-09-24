@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Service;
 
 use App\DTO\CalculatePriceRequest;
-use App\DTO\CreateOrderDTO;
+use App\DTO\CreateOrderDto;
 use App\DTO\PurchaseRequest;
 use App\Entity\Order;
 use App\Repository\ProductRepositoryInterface;
@@ -18,8 +18,8 @@ final readonly class ShopService implements ShopServiceInterface
     public function __construct(
         private ProductRepositoryInterface $productRepository,
         private CouponRepositoryInterface $couponRepository,
-        private PriceCalculatorService $calculator,
-        private PaymentService $paymentService,
+        private PriceCalculatorServiceInterface $calculator,
+        private PaymentServiceInterface $paymentService,
         private OrderRepositoryInterface $orderRepository
     ) {}
 
@@ -39,7 +39,7 @@ final readonly class ShopService implements ShopServiceInterface
         $total = $this->calculator->calculate($product, $dto->taxNumber, $coupon);
         $this->paymentService->pay($total, $dto->paymentProcessor);
 
-        $orderDto = CreateOrderDTO::fromPurchaseRequest($dto, $product, $total, $coupon);
+        $orderDto = CreateOrderDto::fromPurchaseRequest($dto, $product, $total, $coupon);
 
         return $this->orderRepository->create($orderDto);
     }

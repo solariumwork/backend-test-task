@@ -34,13 +34,16 @@ class PriceCalculatorService implements PriceCalculatorServiceInterface
 
     private function applyDiscount(int $priceCents, Coupon $coupon): int
     {
-        $discount = match ($coupon->getType()) {
+        return max(0, $priceCents - $this->calculateDiscount($priceCents, $coupon));
+    }
+
+    private function calculateDiscount(int $priceCents, Coupon $coupon): int
+    {
+        return match ($coupon->getType()) {
             Coupon::TYPE_PERCENT => (int) round($priceCents * ($coupon->getValue() / 100)),
             Coupon::TYPE_FIXED   => $coupon->getValue(),
             default              => 0,
         };
-
-        return max(0, $priceCents - $discount);
     }
 
     private function applyTax(int $priceCents, float $taxRate): int
