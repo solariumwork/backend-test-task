@@ -49,11 +49,7 @@ final readonly class PurchaseController
     )]
     public function __invoke(PurchaseRequest $dto): JsonResponse
     {
-        try {
-            $order = $this->shopService->purchase($dto);
-        } catch (\Throwable $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 422);
-        }
+        $order = $this->shopService->purchase($dto);
 
         return new JsonResponse([
             'orderId' => $order->getId(),
@@ -62,4 +58,3 @@ final readonly class PurchaseController
         ]);
     }
 }
-s

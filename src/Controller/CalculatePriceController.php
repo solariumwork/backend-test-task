@@ -48,11 +48,7 @@ final readonly class CalculatePriceController
     )]
     public function __invoke(CalculatePriceRequest $dto): JsonResponse
     {
-        try {
-            $total = $this->shopService->calculatePrice($dto);
-        } catch (\InvalidArgumentException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], 422);
-        }
+        $total = $this->shopService->calculatePrice($dto);
 
         return new JsonResponse([
             'price' => $total->getCents(),
