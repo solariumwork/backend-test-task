@@ -9,13 +9,7 @@ use App\ValueObject\Money;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
-#[ORM\Table(
-    name: 'orders',
-    indexes: [
-        new ORM\Index(columns: ['product_id']),
-        new ORM\Index(columns: ['status']),
-    ]
-)]
+#[ORM\Table(name: 'orders')]
 final class Order
 {
     #[ORM\Id]
@@ -43,10 +37,6 @@ final class Order
     #[ORM\Embedded(class: Money::class, columnPrefix: 'total_')]
     private Money $total;
 
-    // Статус как enum (в таблице — string).
-    #[ORM\Column(name: 'status', type: 'string', length: 16)]
-    private string $status;
-
     public function __construct(
         string $id,
         int $productId,
@@ -63,7 +53,6 @@ final class Order
         $this->taxNumber = $taxNumber;
         $this->paymentProcessor = $paymentProcessor;
         $this->coupon = $coupon;
-        $this->status = OrderStatus::Pending->value;
     }
 
     public function getId(): string
@@ -89,10 +78,5 @@ final class Order
     public function getCoupon(): ?Coupon
     {
         return $this->coupon;
-    }
-
-    public function getStatus(): OrderStatus
-    {
-        return OrderStatus::from($this->status);
     }
 }

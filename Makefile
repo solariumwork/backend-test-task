@@ -3,6 +3,7 @@ USER_ID=$(shell id -u)
 DC = @USER_ID=$(USER_ID) docker compose
 DC_RUN = ${DC} run --rm sio_test
 DC_EXEC = ${DC} exec sio_test
+DC_DB_EXEC = ${DC} exec database
 
 PHONY: help
 .DEFAULT_GOAL := help
@@ -31,6 +32,9 @@ restart: stop start ## Restart services.
 
 console: ## Login in console.
 	${DC_EXEC} /bin/bash
+
+console_db:
+	${DC_DB_EXEC} /bin/bash
 
 install: ## Install dependencies without running the whole application.
 	${DC_RUN} composer install
