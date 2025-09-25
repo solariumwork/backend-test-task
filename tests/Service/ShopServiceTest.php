@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace App\Tests;
+namespace App\Tests\Service;
 
 use App\DTO\CalculatePriceRequest;
 use App\DTO\PurchaseRequest;
-use App\Entity\Product;
 use App\Entity\Coupon;
 use App\Entity\Order;
-use App\Repository\ProductRepositoryInterface;
+use App\Entity\Product;
 use App\Repository\CouponRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
-use App\Service\PriceCalculatorServiceInterface;
+use App\Repository\ProductRepositoryInterface;
 use App\Service\PaymentService;
+use App\Service\PriceCalculatorServiceInterface;
 use App\Service\ShopService;
 use App\ValueObject\Money;
 use PHPUnit\Framework\MockObject\MockObject;

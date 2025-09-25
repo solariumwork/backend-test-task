@@ -8,6 +8,9 @@ use App\Enum\PaymentProcessorType;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[OA\Schema(
+    required: ['product', 'taxNumber', 'paymentProcessor']
+)]
 final class PurchaseRequest implements RequestDtoInterface
 {
     #[Assert\NotBlank]

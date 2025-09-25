@@ -4,9 +4,10 @@ namespace App\DataFixtures;
 
 use App\Entity\Coupon;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class CouponFixtures extends Fixture
+class CouponFixtures extends Fixture implements FixtureGroupInterface
 {
     public function load(ObjectManager $manager): void
     {
@@ -26,8 +27,15 @@ class CouponFixtures extends Fixture
             );
 
             $manager->persist($coupon);
+
+            $this->addReference('coupon_' . $couponData['code'], $coupon);
         }
 
         $manager->flush();
+    }
+
+    public static function getGroups(): array
+    {
+        return ['default', 'test'];
     }
 }

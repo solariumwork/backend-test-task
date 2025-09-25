@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Tests;
+namespace App\Tests\Service;
 
-use PHPUnit\Framework\TestCase;
-use App\Service\PriceCalculatorService;
-use App\Entity\Product;
 use App\Entity\Coupon;
+use App\Entity\Product;
+use App\Service\PriceCalculatorService;
 use App\ValueObject\Money;
+use PHPUnit\Framework\TestCase;
 
 class PriceCalculatorServiceTest extends TestCase
 {
