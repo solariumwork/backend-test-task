@@ -8,18 +8,17 @@ use App\DTO\RequestDtoInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class RequestDtoResolver implements ArgumentValueResolverInterface
 {
     public function __construct(
         private SerializerInterface $serializer,
-        private ValidatorInterface  $validator
+        private ValidatorInterface $validator,
     ) {
-        //
     }
 
     public function supports(Request $request, ArgumentMetadata $argument): bool
@@ -34,7 +33,7 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
         try {
             $dto = $this->serializer->deserialize($data, $argument->getType(), 'json');
         } catch (\Throwable $e) {
-            throw new BadRequestHttpException('Invalid JSON: ' . $e->getMessage());
+            throw new BadRequestHttpException('Invalid JSON: '.$e->getMessage());
         }
 
         $this->trimStringProperties($dto);

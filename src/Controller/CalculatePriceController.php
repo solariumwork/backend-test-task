@@ -17,7 +17,6 @@ final readonly class CalculatePriceController
 {
     public function __construct(private ShopServiceInterface $shopService)
     {
-        //
     }
 
     #[OA\Post(
@@ -35,7 +34,7 @@ final readonly class CalculatePriceController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'price', description: 'Total price', type: 'number', format: 'float'),
-                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string', example: 'EUR')
+                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string', example: 'EUR'),
                     ],
                     type: 'object'
                 )
@@ -49,8 +48,8 @@ final readonly class CalculatePriceController
                             property: 'errors',
                             description: 'List of syntax/structure errors in the request',
                             type: 'array',
-                            items: new OA\Items(type: 'string', example: "Invalid tax number")
-                        )
+                            items: new OA\Items(type: 'string', example: 'Invalid tax number')
+                        ),
                     ],
                     type: 'object'
                 )
@@ -64,12 +63,12 @@ final readonly class CalculatePriceController
                             property: 'errors',
                             description: 'List of validation errors',
                             type: 'array',
-                            items: new OA\Items(type: 'string', example: "total: This value should be greater than 0.")
-                        )
+                            items: new OA\Items(type: 'string', example: 'total: This value should be greater than 0.')
+                        ),
                     ],
                     type: 'object'
                 )
-            )
+            ),
         ]
     )]
     public function __invoke(CalculatePriceRequest $dto): JsonResponse

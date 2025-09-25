@@ -21,7 +21,7 @@ final class OrderRepository extends ServiceEntityRepository implements OrderRepo
         $this->em = $this->getEntityManager();
     }
 
-    public function create(CreateOrderDTO $dto): Order
+    public function create(CreateOrderDto $dto): Order
     {
         $order = new Order(
             product: $dto->product,

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
-use App\Kernel;
-use App\Entity\Product;
 use App\Entity\Coupon;
+use App\Entity\Product;
+use App\Kernel;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

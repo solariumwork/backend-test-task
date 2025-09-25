@@ -6,7 +6,6 @@ namespace App\Entity;
 
 use App\Repository\CouponRepository;
 use Doctrine\ORM\Mapping as ORM;
-use InvalidArgumentException;
 
 #[ORM\Entity(repositoryClass: CouponRepository::class)]
 #[ORM\Table(name: 'coupon')]
@@ -36,10 +35,10 @@ class Coupon
         string $code,
         string $type,
         int $value,
-        bool $active = true
+        bool $active = true,
     ) {
         if (!in_array($type, [self::TYPE_PERCENT, self::TYPE_FIXED], true)) {
-            throw new InvalidArgumentException('Invalid coupon type.');
+            throw new \InvalidArgumentException('Invalid coupon type.');
         }
 
         $this->code = $code;

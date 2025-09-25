@@ -35,7 +35,7 @@ class PaymentServiceTest extends TestCase
     {
         $originalPrice = 10000;
         $discountPercent = 1000;
-        $expectedCents = (int)(($originalPrice * (1 - $discountPercent / 100)) * 100);
+        $expectedCents = (int) (($originalPrice * (1 - $discountPercent / 100)) * 100);
 
         $money = new Money($expectedCents);
 

@@ -17,7 +17,6 @@ final readonly class PurchaseController
 {
     public function __construct(private ShopServiceInterface $shopService)
     {
-        //
     }
 
     #[OA\Post(
@@ -36,7 +35,7 @@ final readonly class PurchaseController
                     properties: [
                         new OA\Property(property: 'orderId', description: 'Unique ID of the order', type: 'integer', example: 101),
                         new OA\Property(property: 'total', description: 'Total amount in euros', type: 'number', format: 'float', example: 49.99),
-                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string', example: 'EUR')
+                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string', example: 'EUR'),
                     ],
                     type: 'object'
                 )
@@ -50,8 +49,8 @@ final readonly class PurchaseController
                             property: 'errors',
                             description: 'List of syntax/structure errors in the request',
                             type: 'array',
-                            items: new OA\Items(type: 'string', example: "Invalid tax number")
-                        )
+                            items: new OA\Items(type: 'string', example: 'Invalid tax number')
+                        ),
                     ],
                     type: 'object'
                 )
@@ -65,12 +64,12 @@ final readonly class PurchaseController
                             property: 'errors',
                             description: 'List of validation errors',
                             type: 'array',
-                            items: new OA\Items(type: 'string', example: "total: This value should be greater than 0.")
-                        )
+                            items: new OA\Items(type: 'string', example: 'total: This value should be greater than 0.')
+                        ),
                     ],
                     type: 'object'
                 )
-            )
+            ),
         ]
     )]
     public function __invoke(PurchaseRequest $dto): JsonResponse

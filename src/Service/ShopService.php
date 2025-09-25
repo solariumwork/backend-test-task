@@ -8,9 +8,9 @@ use App\DTO\CalculatePriceRequest;
 use App\DTO\CreateOrderDto;
 use App\DTO\PurchaseRequest;
 use App\Entity\Order;
-use App\Repository\ProductRepositoryInterface;
 use App\Repository\CouponRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
+use App\Repository\ProductRepositoryInterface;
 use App\ValueObject\Money;
 use Psr\Log\LoggerInterface;
 
@@ -24,7 +24,6 @@ final readonly class ShopService implements ShopServiceInterface
         private OrderRepositoryInterface $orderRepository,
         private LoggerInterface $logger,
     ) {
-        //
     }
 
     public function calculatePrice(CalculatePriceRequest $dto): Money

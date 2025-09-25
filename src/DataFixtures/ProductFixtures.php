@@ -21,12 +21,12 @@ class ProductFixtures extends Fixture implements FixtureGroupInterface
         foreach ($products as $index => $productData) {
             $product = new Product(
                 $productData['name'],
-                new Money(($productData['price'] * 100))
+                new Money($productData['price'] * 100)
             );
 
             $manager->persist($product);
 
-            $this->addReference('product_' . $index, $product);
+            $this->addReference('product_'.$index, $product);
         }
 
         $manager->flush();

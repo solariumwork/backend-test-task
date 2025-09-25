@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Service;
 
-use App\Entity\Product;
 use App\Entity\Coupon;
+use App\Entity\Product;
 use App\Enum\TaxRate;
 use App\ValueObject\Money;
 
@@ -41,8 +41,8 @@ class PriceCalculatorService implements PriceCalculatorServiceInterface
     {
         return match ($coupon->getType()) {
             Coupon::TYPE_PERCENT => (int) round($priceCents * ($coupon->getValue() / 100)),
-            Coupon::TYPE_FIXED   => $coupon->getValue(),
-            default              => 0,
+            Coupon::TYPE_FIXED => $coupon->getValue(),
+            default => 0,
         };
     }
 

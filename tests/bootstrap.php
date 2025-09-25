@@ -14,8 +14,8 @@ if ($_SERVER['APP_DEBUG']) {
     umask(0000);
 }
 
-if ($_SERVER['APP_ENV'] === 'test') {
-    $kernel = new \App\Kernel('test', true);
+if ('test' === $_SERVER['APP_ENV']) {
+    $kernel = new App\Kernel('test', true);
     $kernel->boot();
 
     $application = new Application($kernel);

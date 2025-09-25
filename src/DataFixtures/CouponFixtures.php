@@ -28,7 +28,7 @@ class CouponFixtures extends Fixture implements FixtureGroupInterface
 
             $manager->persist($coupon);
 
-            $this->addReference('coupon_' . $couponData['code'], $coupon);
+            $this->addReference('coupon_'.$couponData['code'], $coupon);
         }
 
         $manager->flush();

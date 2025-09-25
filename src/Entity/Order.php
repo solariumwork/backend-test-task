@@ -15,7 +15,7 @@ final class Order
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
     #[ORM\ManyToOne(targetEntity: Product::class)]
@@ -32,7 +32,7 @@ final class Order
     #[ORM\Column(name: 'payment_processor', type: 'string', length: 32)]
     private string $paymentProcessor;
 
-    #[ORM\Column(type: "string", length: 32)]
+    #[ORM\Column(type: 'string', length: 32)]
     private string $paymentStatus;
 
     #[ORM\Embedded(class: Money::class, columnPrefix: 'price_')]
@@ -47,7 +47,7 @@ final class Order
         Money $total,
         string $taxNumber,
         string $paymentProcessor,
-        ?Coupon $coupon = null
+        ?Coupon $coupon = null,
     ) {
         $this->product = $product;
         $this->originalPrice = $originalPrice;

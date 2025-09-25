@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Repository\ProductRepository;
 use App\ValueObject\Money;
 use Doctrine\ORM\Mapping as ORM;
-use App\Repository\ProductRepository;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[ORM\Table(name: "product")]
+#[ORM\Table(name: 'product')]
 final class Product
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: "integer")]
+    #[ORM\Column(type: 'integer')]
     private ?int $id = null;
 
-    #[ORM\Column(type: "string", length: 255)]
+    #[ORM\Column(type: 'string', length: 255)]
     private readonly string $name;
 
     #[ORM\Embedded(class: Money::class)]

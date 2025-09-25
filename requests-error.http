@@ -10,7 +10,7 @@
 
 ### 1) Invalid tax number
 ### Expected calculate: 422 Unprocessable Entity
-### { "error": "Invalid tax number" }
+### { "errors": ["Invalid tax number"] }
 POST {{baseUrl}}/api/calculate-price
 Accept: application/json
 Content-Type: application/json
@@ -23,7 +23,7 @@ Content-Type: application/json
 
 ###
 ### Expected purchase: 422
-### { "error": "Invalid tax number" }
+### { "errors": ["Invalid tax number"] }
 POST {{baseUrl}}/api/purchase
 Accept: application/json
 Content-Type: application/json
@@ -37,7 +37,7 @@ Content-Type: application/json
 
 ### 2) Unknown product
 ### Expected calculate: 422
-### { "error": "Product not found" }
+### { "errors": ["Product not found"] }
 POST {{baseUrl}}/api/calculate-price
 Accept: application/json
 Content-Type: application/json
@@ -50,7 +50,7 @@ Content-Type: application/json
 
 ###
 ### Expected purchase: 422
-### { "error": "Product not found" }
+### { "errors": ["Product not found"] }
 POST {{baseUrl}}/api/purchase
 Accept: application/json
 Content-Type: application/json
@@ -116,7 +116,7 @@ Content-Type: application/json
 
 ### 5) Invalid coupon code
 ### Expected calculate: 422
-### { "error": "Invalid or inactive coupon" }
+### { "errors": ["Invalid or inactive coupon"] }
 POST {{baseUrl}}/api/calculate-price
 Accept: application/json
 Content-Type: application/json
@@ -129,7 +129,7 @@ Content-Type: application/json
 
 ###
 ### Expected purchase: 422
-### { "error": "Invalid or inactive coupon" }
+### { "errors": ["Invalid or inactive coupon"] }
 POST {{baseUrl}}/api/purchase
 Accept: application/json
 Content-Type: application/json
@@ -155,8 +155,8 @@ Content-Type: application/json
 }
 
 ### 7) Unsupported paymentProcessor
-### Expected: 422 (or 400) with error message
-### { "error": "Unsupported payment processor" }
+### Expected: 422 Unprocessable Entity
+### { "errors": ["The value you selected is not a valid choice."] }
 POST {{baseUrl}}/api/purchase
 Accept: application/json
 Content-Type: application/json
@@ -191,28 +191,4 @@ Content-Type: application/json
   "product": {{product_iphone}},
   "couponCode": null,
   "paymentProcessor": "paypal"
-}
-
-### 9) Different-country VAT checks (calc only): FR / GR
-### Expected FR calculate: 200 { "price": 120.00, "currency": "EUR" }
-POST {{baseUrl}}/api/calculate-price
-Accept: application/json
-Content-Type: application/json
-
-{
-  "product": {{product_iphone}},
-  "taxNumber": "FRAB123456789",
-  "couponCode": null
-}
-
-###
-### Expected GR calculate: 200 { "price": 124.00, "currency": "EUR" }
-POST {{baseUrl}}/api/calculate-price
-Accept: application/json
-Content-Type: application/json
-
-{
-  "product": {{product_iphone}},
-  "taxNumber": "GR123456789",
-  "couponCode": null
 }

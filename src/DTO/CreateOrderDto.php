@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
-use App\Entity\Product;
 use App\Entity\Coupon;
+use App\Entity\Product;
 use App\ValueObject\Money;
 
 final class CreateOrderDto
@@ -15,14 +15,15 @@ final class CreateOrderDto
         public Money $total,
         public string $taxNumber,
         public string $paymentProcessor,
-        public ?Coupon $coupon = null
-    ) {}
+        public ?Coupon $coupon = null,
+    ) {
+    }
 
     public static function fromPurchaseRequest(
         PurchaseRequest $request,
         Product $product,
         Money $total,
-        ?Coupon $coupon = null
+        ?Coupon $coupon = null,
     ): self {
         return new self(
             product: $product,

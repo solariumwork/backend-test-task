@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\DTO;
 
-use Symfony\Component\Validator\Constraints as Assert;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[OA\Schema(
     required: ['product', 'taxNumber']
