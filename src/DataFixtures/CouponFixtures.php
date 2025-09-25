@@ -8,12 +8,11 @@ use App\Entity\Coupon;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
-use Override;
 
 /** @psalm-suppress UnusedClass */
 class CouponFixtures extends Fixture implements FixtureGroupInterface
 {
-    #[Override]
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $coupons = [
@@ -38,7 +37,7 @@ class CouponFixtures extends Fixture implements FixtureGroupInterface
         $manager->flush();
     }
 
-    #[Override]
+    #[\Override]
     public static function getGroups(): array
     {
         return ['default', 'test'];

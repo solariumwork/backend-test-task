@@ -12,6 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @psalm-suppress PossiblyUnusedMethod
+ *
  * @extends ServiceEntityRepository<Order>
  */
 final class OrderRepository extends ServiceEntityRepository implements OrderRepositoryInterface

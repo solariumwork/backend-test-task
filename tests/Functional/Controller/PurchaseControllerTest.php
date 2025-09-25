@@ -10,7 +10,6 @@ use App\Kernel;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Override;
 
 /** @psalm-suppress UnusedClass */
 class PurchaseControllerTest extends WebTestCase
@@ -20,7 +19,7 @@ class PurchaseControllerTest extends WebTestCase
     /** @var array<string, Product|Coupon|null> */
     private array $references = [];
 
-    #[Override]
+    #[\Override]
     protected function setUp(): void
     {
         $this->client = static::createClient();
@@ -151,15 +150,22 @@ class PurchaseControllerTest extends WebTestCase
      */
     private function decodeResponse(): array
     {
-        $decoded = json_decode((string) $this->client->getResponse()->getContent(), true);
+        $content = (string) $this->client->getResponse()->getContent();
+        $decoded = json_decode($content, true);
+
         if (!is_array($decoded)) {
             $this->fail('Invalid JSON response');
         }
 
-        return $decoded;
+        $decodedStringKeys = [];
+        foreach ($decoded as $key => $value) {
+            $decodedStringKeys[(string) $key] = $value;
+        }
+
+        return $decodedStringKeys;
     }
 
-    #[Override]
+    #[\Override]
     protected static function getKernelClass(): string
     {
         return Kernel::class;

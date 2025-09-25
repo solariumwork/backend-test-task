@@ -10,7 +10,6 @@ use App\Kernel;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Override;
 
 /** @psalm-suppress UnusedClass */
 class CalculatePriceControllerTest extends WebTestCase
@@ -20,7 +19,7 @@ class CalculatePriceControllerTest extends WebTestCase
     /** @var array<string, Product|Coupon|null> */
     private array $references = [];
 
-    #[Override]
+    #[\Override]
     protected function setUp(): void
     {
         $this->client = static::createClient();
@@ -146,7 +145,7 @@ class CalculatePriceControllerTest extends WebTestCase
     private function request(array $payload): KernelBrowser
     {
         $json = json_encode($payload);
-        if ($json === false) {
+        if (false === $json) {
             $json = '';
         }
 
@@ -163,7 +162,6 @@ class CalculatePriceControllerTest extends WebTestCase
     }
 
     /**
-     * @param KernelBrowser $client
      * @return array<string, mixed>
      */
     private function decodeResponse(KernelBrowser $client): array
@@ -175,13 +173,13 @@ class CalculatePriceControllerTest extends WebTestCase
 
         $stringKeyed = [];
         foreach ($decoded as $key => $value) {
-            $stringKeyed[(string)$key] = $value;
+            $stringKeyed[(string) $key] = $value;
         }
 
         return $stringKeyed;
     }
 
-    #[Override]
+    #[\Override]
     protected static function getKernelClass(): string
     {
         return Kernel::class;

@@ -9,12 +9,11 @@ use App\ValueObject\Money;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
-use Override;
 
 /** @psalm-suppress UnusedClass */
 class ProductFixtures extends Fixture implements FixtureGroupInterface
 {
-    #[Override]
+    #[\Override]
     public function load(ObjectManager $manager): void
     {
         $products = [
@@ -36,7 +35,7 @@ class ProductFixtures extends Fixture implements FixtureGroupInterface
         $manager->flush();
     }
 
-    #[Override]
+    #[\Override]
     public static function getGroups(): array
     {
         return ['default', 'test'];

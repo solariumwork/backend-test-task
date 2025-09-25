@@ -10,6 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @psalm-suppress PossiblyUnusedMethod
+ *
  * @extends ServiceEntityRepository<Coupon>
  */
 final class CouponRepository extends ServiceEntityRepository implements CouponRepositoryInterface

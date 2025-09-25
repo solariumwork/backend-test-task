@@ -11,12 +11,11 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Override;
 
 /** @psalm-suppress UnusedClass */
 class ApiExceptionSubscriber implements EventSubscriberInterface
 {
-    #[Override]
+    #[\Override]
     public static function getSubscribedEvents(): array
     {
         return [

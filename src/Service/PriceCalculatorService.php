@@ -8,11 +8,10 @@ use App\Entity\Coupon;
 use App\Entity\Product;
 use App\Enum\TaxRate;
 use App\ValueObject\Money;
-use Override;
 
 class PriceCalculatorService implements PriceCalculatorServiceInterface
 {
-    #[Override]
+    #[\Override]
     public function calculate(Product $product, string $taxNumber, ?Coupon $coupon = null): Money
     {
         $totalCents = $this->calculateFinalCents(

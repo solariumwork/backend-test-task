@@ -10,6 +10,7 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @psalm-suppress PossiblyUnusedMethod
+ *
  * @extends ServiceEntityRepository<Product>
  */
 final class ProductRepository extends ServiceEntityRepository implements ProductRepositoryInterface

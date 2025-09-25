@@ -6,7 +6,6 @@ namespace App\Service;
 
 use App\Enum\PaymentProcessorType;
 use App\ValueObject\Money;
-use Override;
 use Systemeio\TestForCandidates\PaymentProcessor\PaypalPaymentProcessor;
 use Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor;
 
@@ -18,7 +17,7 @@ readonly class PaymentService implements PaymentServiceInterface
     ) {
     }
 
-    #[Override]
+    #[\Override]
     public function pay(Money $money, string $processor): void
     {
         match (strtolower($processor)) {
