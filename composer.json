@@ -67,7 +67,9 @@
         "cs-fix": "php-cs-fixer fix",
         "stan": "phpstan analyse",
         "psalm": "psalm",
-        "test": "APP_ENV=test php bin/phpunit"
+        "test": "APP_ENV=test php bin/phpunit",
+        "install-hooks": "bash scripts/install-hooks.sh",
+        "remove-hooks": "bash scripts/remove-hooks.sh"
     },
     "conflict": {
         "symfony/symfony": "*"

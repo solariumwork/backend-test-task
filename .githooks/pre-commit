@@ -1,0 +1,24 @@
+#!/bin/sh
+set -e
+
+SERVICE="sio_test"
+
+run_check() {
+    CMD=$1
+    LABEL=$2
+    echo "🔍 Checking $LABEL..."
+    if ! docker compose exec -T "$SERVICE" $CMD; then
+        echo "❌ $LABEL failed. Please fix issues before committing."
+        exit 1
+    fi
+    echo "✅ $LABEL passed"
+}
+
+run_check "composer cs" "PHP CS Fixer"
+run_check "composer stan" "PHPStan"
+run_check "composer psalm" "Psalm"
+run_check "composer test" "PHPUnit"
+
+echo ""
+echo "🎉 All checks passed. Ready to commit!"
+exit 0

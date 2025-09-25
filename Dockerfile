@@ -17,8 +17,13 @@ COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 ENV COMPOSER_CACHE_DIR=/tmp/composer-cache
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Run migration and fixtures
 COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Pre-commit hooks
+COPY scripts/install-hooks.sh /app/scripts/install-hooks.sh
+RUN chmod +x /app/scripts/install-hooks.sh
 
 # Setup php app user
 ARG USER_ID=1000
