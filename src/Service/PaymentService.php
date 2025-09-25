@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Service;
 
+use App\Enum\PaymentProcessorType;
 use App\ValueObject\Money;
 use Systemeio\TestForCandidates\PaymentProcessor\PaypalPaymentProcessor;
 use Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor;
@@ -19,9 +20,11 @@ readonly class PaymentService implements PaymentServiceInterface
 
     public function pay(Money $money, string $processor): void
     {
-        match (strtolower($processor)) {
-            'paypal' => $this->paypal->pay($money->getCents()),
-            'stripe' => $this->stripe->processPayment($money->getEuros()),
+        $processor = strtolower($processor);
+
+        match ($processor) {
+            PaymentProcessorType::PAYPAL->value => $this->paypal->pay($money->getCents()),
+            PaymentProcessorType::STRIPE->value => $this->stripe->processPayment($money->getEuros()),
             default => throw new \InvalidArgumentException('Unknown payment processor'),
         };
     }

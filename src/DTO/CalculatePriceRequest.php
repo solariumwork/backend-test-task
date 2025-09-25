@@ -11,6 +11,7 @@ final class CalculatePriceRequest implements RequestDtoInterface
 {
     #[Assert\NotBlank]
     #[Assert\Type('integer')]
+    #[Assert\Positive]
     #[OA\Property(
         description: 'ID of the product',
         type: 'integer',
@@ -20,6 +21,7 @@ final class CalculatePriceRequest implements RequestDtoInterface
 
     #[Assert\NotBlank]
     #[Assert\Type('string')]
+    #[Assert\Length(max: 20)]
     #[OA\Property(
         description: 'Tax number of the customer',
         type: 'string',
@@ -28,6 +30,7 @@ final class CalculatePriceRequest implements RequestDtoInterface
     public string $taxNumber;
 
     #[Assert\Type('string')]
+    #[Assert\Length(max: 30)]
     #[OA\Property(
         description: 'Optional coupon code for discount',
         type: 'string',
