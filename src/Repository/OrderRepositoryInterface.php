@@ -10,4 +10,6 @@ use App\Entity\Order;
 interface OrderRepositoryInterface
 {
     public function create(CreateOrderDTO $dto): Order;
+
+    public function save(Order $order): void;
 }

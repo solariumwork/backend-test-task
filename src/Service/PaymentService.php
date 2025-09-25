@@ -24,8 +24,15 @@ readonly class PaymentService implements PaymentServiceInterface
 
         match ($processor) {
             PaymentProcessorType::PAYPAL->value => $this->paypal->pay($money->getCents()),
-            PaymentProcessorType::STRIPE->value => $this->stripe->processPayment($money->getEuros()),
+            PaymentProcessorType::STRIPE->value => $this->processStripe($money),
             default => throw new \InvalidArgumentException('Unknown payment processor'),
         };
+    }
+
+    private function processStripe(Money $money): void
+    {
+        if (!$this->stripe->processPayment($money->getEuros())) {
+            throw new \RuntimeException('Stripe payment failed');
+        }
     }
 }

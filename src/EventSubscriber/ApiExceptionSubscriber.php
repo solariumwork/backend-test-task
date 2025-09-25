@@ -17,7 +17,10 @@ use Throwable;
 
 final readonly class ApiExceptionSubscriber implements EventSubscriberInterface
 {
-    public function __construct(private LoggerInterface $logger) {}
+    public function __construct(private LoggerInterface $logger)
+    {
+        //
+    }
 
     public static function getSubscribedEvents(): array
     {
@@ -48,8 +51,8 @@ final readonly class ApiExceptionSubscriber implements EventSubscriberInterface
             ),
             default => $this->respond(
                 $event,
-                Response::HTTP_INTERNAL_SERVER_ERROR,
-                ['error' => 'Internal Server Error'],
+                Response::HTTP_UNPROCESSABLE_ENTITY,
+                ['error' => 'Unexpected error occurred'],
                 $exception
             ),
         };
@@ -58,7 +61,9 @@ final readonly class ApiExceptionSubscriber implements EventSubscriberInterface
     private function handleUnprocessableEntity(ExceptionEvent $event, UnprocessableEntityHttpException $exception): void
     {
         $decoded = json_decode($exception->getMessage(), true) ?: [];
-        $payload = $decoded !== [] ? ['errors' => $decoded] : ['error' => $exception->getMessage() ?: 'Unprocessable Entity'];
+        $payload = $decoded !== []
+            ? ['errors' => $decoded]
+            : ['error' => $exception->getMessage() ?: 'Unprocessable Entity'];
 
         $this->respond($event, Response::HTTP_UNPROCESSABLE_ENTITY, $payload);
     }
@@ -67,17 +72,19 @@ final readonly class ApiExceptionSubscriber implements EventSubscriberInterface
     {
         $status = $exception->getStatusCode();
         $payload = $status >= 500
-            ? ['error' => 'Internal Server Error']
+            ? ['error' => 'Unexpected error occurred']
             : ['error' => $exception->getMessage() ?: (Response::$statusTexts[$status] ?? 'Error')];
 
-        $this->respond($event, $status, $payload, $status >= 500 ? $exception : null);
+        $responseStatus = $status >= 500 ? Response::HTTP_UNPROCESSABLE_ENTITY : $status;
+
+        $this->respond($event, $responseStatus, $payload, $status >= 500 ? $exception : null);
     }
 
     private function respond(ExceptionEvent $event, int $status, array $payload, ?Throwable $exception = null): void
     {
         $event->setResponse(new JsonResponse($payload, $status));
 
-        if ($status >= 500 && $exception !== null) {
+        if ($exception !== null) {
             $this->logger->error($exception->getMessage(), ['exception' => $exception]);
         }
     }

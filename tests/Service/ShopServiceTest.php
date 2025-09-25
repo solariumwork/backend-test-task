@@ -18,6 +18,7 @@ use App\Service\ShopService;
 use App\ValueObject\Money;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 
 final class ShopServiceTest extends TestCase
 {
@@ -45,13 +46,15 @@ final class ShopServiceTest extends TestCase
         $this->calculator = $this->createMock(PriceCalculatorServiceInterface::class);
         $this->paymentService = $this->createMock(PaymentService::class);
         $this->orderRepo = $this->createMock(OrderRepositoryInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->shopService = new ShopService(
             $this->productRepo,
             $this->couponRepo,
             $this->calculator,
             $this->paymentService,
-            $this->orderRepo
+            $this->orderRepo,
+            $this->logger
         );
     }
 
@@ -150,5 +153,35 @@ final class ShopServiceTest extends TestCase
 
         $result = $this->shopService->purchase($dto);
         $this->assertSame($order, $result);
+    }
+
+    public function testPurchaseLogsErrorOnPaymentFailure(): void
+    {
+        $product = new Product('Iphone', new Money(10000));
+        $coupon = null;
+        $order = new Order($product, new Money(10000), new Money(11900), 'DE123456789', 'paypal', $coupon);
+
+        $dto = new PurchaseRequest();
+        $dto->product = 1;
+        $dto->taxNumber = 'DE123456789';
+        $dto->couponCode = null;
+        $dto->paymentProcessor = 'paypal';
+
+        $money = new Money(11900);
+
+        $this->productRepo->method('findOrFail')->willReturn($product);
+        $this->calculator->method('calculate')->willReturn($money);
+        $this->orderRepo->method('create')->willReturn($order);
+
+        $this->paymentService->method('pay')
+            ->willThrowException(new \RuntimeException('Payment gateway error'));
+
+        $this->logger->expects($this->once())
+            ->method('error')
+            ->with($this->stringContains('Payment failed'));
+
+        $this->expectException(\RuntimeException::class);
+
+        $this->shopService->purchase($dto);
     }
 }

@@ -12,6 +12,7 @@ use App\Repository\ProductRepositoryInterface;
 use App\Repository\CouponRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
 use App\ValueObject\Money;
+use Psr\Log\LoggerInterface;
 
 final readonly class ShopService implements ShopServiceInterface
 {
@@ -20,7 +21,8 @@ final readonly class ShopService implements ShopServiceInterface
         private CouponRepositoryInterface $couponRepository,
         private PriceCalculatorServiceInterface $calculator,
         private PaymentServiceInterface $paymentService,
-        private OrderRepositoryInterface $orderRepository
+        private OrderRepositoryInterface $orderRepository,
+        private LoggerInterface $logger,
     ) {
         //
     }
@@ -33,16 +35,42 @@ final readonly class ShopService implements ShopServiceInterface
         return $this->calculator->calculate($product, $dto->taxNumber, $coupon);
     }
 
+    /**
+     * @throws \Throwable
+     */
     public function purchase(PurchaseRequest $dto): Order
     {
         $product = $this->productRepository->findOrFail($dto->product);
         $coupon = $dto->couponCode ? $this->couponRepository->findActiveOrFail($dto->couponCode) : null;
 
         $total = $this->calculator->calculate($product, $dto->taxNumber, $coupon);
-        $this->paymentService->pay($total, $dto->paymentProcessor);
 
         $orderDto = CreateOrderDto::fromPurchaseRequest($dto, $product, $total, $coupon);
+        $order = $this->orderRepository->create($orderDto);
 
-        return $this->orderRepository->create($orderDto);
+        $this->processPayment($order, $total, $dto->paymentProcessor);
+
+        $this->orderRepository->save($order);
+
+        return $order;
+    }
+
+    /**
+     * @throws \Throwable
+     */
+    private function processPayment(Order $order, Money $amount, string $paymentProcessor): void
+    {
+        try {
+            $this->paymentService->pay($amount, $paymentProcessor);
+            $order->markAsPaid();
+        } catch (\Throwable $e) {
+            $order->markAsFailed();
+            $this->logger->error(sprintf(
+                'Payment failed for Order %d: %s',
+                $order->getId(),
+                $e->getMessage()
+            ));
+            throw $e;
+        }
     }
 }

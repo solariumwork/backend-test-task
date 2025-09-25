@@ -37,4 +37,10 @@ final class OrderRepository extends ServiceEntityRepository implements OrderRepo
 
         return $order;
     }
+
+    public function save(Order $order): void
+    {
+        $this->em->persist($order);
+        $this->em->flush();
+    }
 }

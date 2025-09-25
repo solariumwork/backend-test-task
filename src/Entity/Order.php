@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Enum\PaymentStatus;
 use App\Repository\OrderRepository;
 use App\ValueObject\Money;
 use Doctrine\ORM\Mapping as ORM;
@@ -31,6 +32,9 @@ final class Order
     #[ORM\Column(name: 'payment_processor', type: 'string', length: 32)]
     private string $paymentProcessor;
 
+    #[ORM\Column(type: "string", length: 32)]
+    private string $paymentStatus;
+
     #[ORM\Embedded(class: Money::class, columnPrefix: 'price_')]
     private Money $originalPrice;
 
@@ -51,6 +55,8 @@ final class Order
         $this->taxNumber = $taxNumber;
         $this->paymentProcessor = $paymentProcessor;
         $this->coupon = $coupon;
+
+        $this->paymentStatus = PaymentStatus::PENDING->value;
     }
 
     public function getId(): ?int
@@ -61,5 +67,15 @@ final class Order
     public function getTotal(): Money
     {
         return $this->total;
+    }
+
+    public function markAsPaid(): void
+    {
+        $this->paymentStatus = PaymentStatus::PAID->value;
+    }
+
+    public function markAsFailed(): void
+    {
+        $this->paymentStatus = PaymentStatus::FAILED->value;
     }
 }
