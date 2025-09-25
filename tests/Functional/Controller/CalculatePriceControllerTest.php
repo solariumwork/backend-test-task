@@ -7,12 +7,17 @@ namespace App\Tests\Functional\Controller;
 use App\Entity\Coupon;
 use App\Entity\Product;
 use App\Kernel;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class CalculatePriceControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
+
+    /**
+     * @var array<string, Product|Coupon|null>
+     */
     private array $references = [];
 
     protected function setUp(): void
@@ -24,7 +29,10 @@ class CalculatePriceControllerTest extends WebTestCase
     private function loadReferences(): void
     {
         $container = $this->client->getContainer();
-        $em = $container->get('doctrine')->getManager();
+
+        /** @var ManagerRegistry $doctrine */
+        $doctrine = $container->get('doctrine');
+        $em = $doctrine->getManager();
 
         $this->references['product_iphone'] = $em->getRepository(Product::class)
             ->findOneBy(['name' => 'Iphone']);
@@ -35,14 +43,19 @@ class CalculatePriceControllerTest extends WebTestCase
 
     public function testCalculatePriceSuccess(): void
     {
+        /** @var Product $product */
+        $product = $this->references['product_iphone'];
+        /** @var Coupon $coupon */
+        $coupon = $this->references['coupon_D15'];
+
         $client = $this->request([
-            'product' => $this->references['product_iphone']->getId(),
+            'product' => $product->getId(),
             'taxNumber' => 'DE123456789',
-            'couponCode' => $this->references['coupon_D15']->getCode(),
+            'couponCode' => $coupon->getCode(),
         ]);
 
         self::assertResponseIsSuccessful();
-        $data = json_decode($client->getResponse()->getContent(), true);
+        $data = $this->decodeResponse($client);
         $this->assertArrayHasKey('price', $data);
         $this->assertArrayHasKey('currency', $data);
         $this->assertEquals('EUR', $data['currency']);
@@ -51,16 +64,22 @@ class CalculatePriceControllerTest extends WebTestCase
 
     public function testCalculatePriceInvalidTaxNumber(): void
     {
+        /** @var Product $product */
+        $product = $this->references['product_iphone'];
+        /** @var Coupon $coupon */
+        $coupon = $this->references['coupon_D15'];
+
         $client = $this->request([
-            'product' => $this->references['product_iphone']->getId(),
+            'product' => $product->getId(),
             'taxNumber' => 'INVALID',
-            'couponCode' => $this->references['coupon_D15']->getCode(),
+            'couponCode' => $coupon->getCode(),
         ]);
 
         self::assertResponseStatusCodeSame(422);
 
-        $data = json_decode($client->getResponse()->getContent(), true);
+        $data = $this->decodeResponse($client);
         $this->assertArrayHasKey('errors', $data);
+        $this->assertIsArray($data['errors']);
         $this->assertContains('Invalid tax number', $data['errors']);
     }
 
@@ -72,8 +91,9 @@ class CalculatePriceControllerTest extends WebTestCase
         ]);
 
         self::assertResponseStatusCodeSame(422);
-        $data = json_decode($client->getResponse()->getContent(), true);
+        $data = $this->decodeResponse($client);
         $this->assertArrayHasKey('errors', $data);
+        $this->assertIsArray($data['errors']);
         $this->assertContains('Product not found', $data['errors']);
     }
 
@@ -85,21 +105,25 @@ class CalculatePriceControllerTest extends WebTestCase
         ]);
 
         self::assertResponseStatusCodeSame(422);
-        $data = json_decode($client->getResponse()->getContent(), true);
+        $data = $this->decodeResponse($client);
         $this->assertArrayHasKey('errors', $data);
+        $this->assertIsArray($data['errors']);
         $this->assertStringContainsString('positive', implode(' ', $data['errors']));
     }
 
     public function testCalculatePriceEmptyCouponCode(): void
     {
+        /** @var Product $product */
+        $product = $this->references['product_iphone'];
+
         $client = $this->request([
-            'product' => $this->references['product_iphone']->getId(),
+            'product' => $product->getId(),
             'taxNumber' => 'DE123456789',
             'couponCode' => '',
         ]);
 
         self::assertResponseIsSuccessful();
-        $data = json_decode($client->getResponse()->getContent(), true);
+        $data = $this->decodeResponse($client);
         $this->assertArrayHasKey('price', $data);
     }
 
@@ -110,23 +134,51 @@ class CalculatePriceControllerTest extends WebTestCase
         ]);
 
         self::assertResponseStatusCodeSame(422);
-        $data = json_decode($client->getResponse()->getContent(), true);
+        $data = $this->decodeResponse($client);
         $this->assertArrayHasKey('errors', $data);
+        $this->assertIsArray($data['errors']);
         $this->assertStringContainsString('blank', implode(' ', $data['errors']));
     }
 
+    /**
+     * @param array<string, mixed> $payload
+     */
     private function request(array $payload): KernelBrowser
     {
+        $json = json_encode($payload);
+        if ($json === false) {
+            $json = '';
+        }
+
         $this->client->request(
             'POST',
             '/api/calculate-price',
             [],
             [],
             ['CONTENT_TYPE' => 'application/json'],
-            json_encode($payload)
+            $json
         );
 
         return $this->client;
+    }
+
+    /**
+     * @param KernelBrowser $client
+     * @return array<string, mixed>
+     */
+    private function decodeResponse(KernelBrowser $client): array
+    {
+        $decoded = json_decode((string) $client->getResponse()->getContent(), true);
+        if (!is_array($decoded)) {
+            $this->fail('Invalid JSON response');
+        }
+
+        $stringKeyed = [];
+        foreach ($decoded as $key => $value) {
+            $stringKeyed[(string)$key] = $value;
+        }
+
+        return $stringKeyed;
     }
 
     protected static function getKernelClass(): string

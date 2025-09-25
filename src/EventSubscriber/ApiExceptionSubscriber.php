@@ -42,8 +42,8 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
 
     private function isApiRequest(Request $request): bool
     {
-        $contentType = strtolower($request->headers->get('Content-Type', ''));
-        $acceptHeader = strtolower($request->headers->get('Accept', ''));
+        $contentType = strtolower((string) $request->headers->get('Content-Type', ''));
+        $acceptHeader = strtolower((string) $request->headers->get('Accept', ''));
 
         return str_contains($acceptHeader, 'application/json')
             || str_contains($contentType, 'application/json');

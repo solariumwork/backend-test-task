@@ -23,17 +23,31 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
 
     public function supports(Request $request, ArgumentMetadata $argument): bool
     {
-        return is_subclass_of($argument->getType(), RequestDtoInterface::class);
+        $type = $argument->getType();
+
+        return is_string($type) && is_subclass_of($type, RequestDtoInterface::class);
     }
 
+    /**
+     * @return iterable<RequestDtoInterface>
+     */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         $data = $request->getContent();
 
+        $type = $argument->getType();
+        if (!is_string($type)) {
+            throw new BadRequestHttpException('Missing or invalid DTO type for argument.');
+        }
+
         try {
-            $dto = $this->serializer->deserialize($data, $argument->getType(), 'json');
+            $dto = $this->serializer->deserialize((string) $data, $type, 'json');
         } catch (\Throwable $e) {
             throw new BadRequestHttpException('Invalid JSON: '.$e->getMessage());
+        }
+
+        if (!$dto instanceof RequestDtoInterface) {
+            throw new BadRequestHttpException('Deserialized object is not a valid request DTO.');
         }
 
         $this->trimStringProperties($dto);
@@ -45,7 +59,7 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
                 $errors[$violation->getPropertyPath()] = $violation->getMessage();
             }
 
-            throw new UnprocessableEntityHttpException(json_encode($errors));
+            throw new UnprocessableEntityHttpException((string) json_encode($errors));
         }
 
         yield $dto;

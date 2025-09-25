@@ -39,6 +39,9 @@ final class ShopServiceTest extends TestCase
     /** @var OrderRepositoryInterface&MockObject */
     private $orderRepo;
 
+    /** @var LoggerInterface&MockObject */
+    private $logger;
+
     protected function setUp(): void
     {
         $this->productRepo = $this->createMock(ProductRepositoryInterface::class);
