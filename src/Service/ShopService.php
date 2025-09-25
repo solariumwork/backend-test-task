@@ -12,6 +12,7 @@ use App\Repository\CouponRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
 use App\Repository\ProductRepositoryInterface;
 use App\ValueObject\Money;
+use Override;
 use Psr\Log\LoggerInterface;
 
 final readonly class ShopService implements ShopServiceInterface
@@ -24,8 +25,10 @@ final readonly class ShopService implements ShopServiceInterface
         private OrderRepositoryInterface $orderRepository,
         private LoggerInterface $logger,
     ) {
+        //
     }
 
+    #[Override]
     public function calculatePrice(CalculatePriceRequest $dto): Money
     {
         $product = $this->productRepository->findOrFail($dto->product);
@@ -37,6 +40,7 @@ final readonly class ShopService implements ShopServiceInterface
     /**
      * @throws \Throwable
      */
+    #[Override]
     public function purchase(PurchaseRequest $dto): Order
     {
         $product = $this->productRepository->findOrFail($dto->product);

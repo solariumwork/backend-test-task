@@ -11,12 +11,17 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * @psalm-suppress PossiblyUnusedMethod
  * @extends ServiceEntityRepository<Order>
  */
 final class OrderRepository extends ServiceEntityRepository implements OrderRepositoryInterface
 {
     private EntityManagerInterface $em;
 
+    /**
+     * @psalm-suppress UnusedParam PossiblyUnusedMethod
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Order::class);

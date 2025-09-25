@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Product;
@@ -7,9 +9,12 @@ use App\ValueObject\Money;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
+use Override;
 
+/** @psalm-suppress UnusedClass */
 class ProductFixtures extends Fixture implements FixtureGroupInterface
 {
+    #[Override]
     public function load(ObjectManager $manager): void
     {
         $products = [
@@ -25,13 +30,13 @@ class ProductFixtures extends Fixture implements FixtureGroupInterface
             );
 
             $manager->persist($product);
-
             $this->addReference('product_'.$index, $product);
         }
 
         $manager->flush();
     }
 
+    #[Override]
     public static function getGroups(): array
     {
         return ['default', 'test'];

@@ -7,6 +7,7 @@ namespace App\Entity;
 use App\Repository\CouponRepository;
 use Doctrine\ORM\Mapping as ORM;
 
+/** @psalm-suppress UnusedProperty */
 #[ORM\Entity(repositoryClass: CouponRepository::class)]
 #[ORM\Table(name: 'coupon')]
 class Coupon
@@ -62,6 +63,7 @@ class Coupon
         return $this->value;
     }
 
+    /** @psalm-suppress PossiblyUnusedMethod */
     public function isActive(): bool
     {
         return $this->active;

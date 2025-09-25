@@ -9,10 +9,15 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
+ * @psalm-suppress PossiblyUnusedMethod
  * @extends ServiceEntityRepository<Coupon>
  */
 final class CouponRepository extends ServiceEntityRepository implements CouponRepositoryInterface
 {
+    /**
+     * @psalm-suppress UnusedParam PossiblyUnusedMethod
+     * @psalm-suppress PossiblyUnusedMethod
+     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Coupon::class);

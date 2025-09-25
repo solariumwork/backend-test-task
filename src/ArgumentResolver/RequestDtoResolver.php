@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\ArgumentResolver;
 
 use App\DTO\RequestDtoInterface;
+use Override;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/** @psalm-suppress UnusedClass */
 final readonly class RequestDtoResolver implements ArgumentValueResolverInterface
 {
     public function __construct(
@@ -21,6 +23,7 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
     ) {
     }
 
+    #[Override]
     public function supports(Request $request, ArgumentMetadata $argument): bool
     {
         $type = $argument->getType();
@@ -31,6 +34,7 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
     /**
      * @return iterable<RequestDtoInterface>
      */
+    #[Override]
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         $data = $request->getContent();

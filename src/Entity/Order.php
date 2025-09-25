@@ -9,6 +9,7 @@ use App\Repository\OrderRepository;
 use App\ValueObject\Money;
 use Doctrine\ORM\Mapping as ORM;
 
+/** @psalm-suppress UnusedProperty */
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: 'orders')]
 final class Order

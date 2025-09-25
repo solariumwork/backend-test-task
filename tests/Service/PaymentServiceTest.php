@@ -10,7 +10,9 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Systemeio\TestForCandidates\PaymentProcessor\PaypalPaymentProcessor;
 use Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor;
+use Override;
 
+/** @psalm-suppress UnusedClass */
 class PaymentServiceTest extends TestCase
 {
     private PaymentService $paymentService;
@@ -20,6 +22,7 @@ class PaymentServiceTest extends TestCase
     /** @var StripePaymentProcessor&MockObject */
     private $stripeMock;
 
+    #[Override]
     protected function setUp(): void
     {
         $this->paypalMock = $this->createMock(PaypalPaymentProcessor::class);

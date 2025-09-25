@@ -25,7 +25,11 @@ ARG USER_ID=1000
 RUN adduser -u ${USER_ID} -D -H app
 USER app
 
+# Copy project and create psalm cache
 COPY --chown=app . /app
+RUN mkdir -p /app/var/psalm/cache \
+    && chown -R app:app /app/var
+
 WORKDIR /app
 
 EXPOSE 8337

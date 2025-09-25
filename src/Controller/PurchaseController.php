@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
+/** @psalm-suppress UnusedClass */
 #[Route('/api/purchase', methods: ['POST'])]
 final readonly class PurchaseController
 {

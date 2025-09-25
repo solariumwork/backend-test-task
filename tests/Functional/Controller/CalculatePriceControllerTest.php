@@ -10,16 +10,17 @@ use App\Kernel;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Override;
 
+/** @psalm-suppress UnusedClass */
 class CalculatePriceControllerTest extends WebTestCase
 {
     private KernelBrowser $client;
 
-    /**
-     * @var array<string, Product|Coupon|null>
-     */
+    /** @var array<string, Product|Coupon|null> */
     private array $references = [];
 
+    #[Override]
     protected function setUp(): void
     {
         $this->client = static::createClient();
@@ -76,7 +77,6 @@ class CalculatePriceControllerTest extends WebTestCase
         ]);
 
         self::assertResponseStatusCodeSame(422);
-
         $data = $this->decodeResponse($client);
         $this->assertArrayHasKey('errors', $data);
         $this->assertIsArray($data['errors']);
@@ -181,6 +181,7 @@ class CalculatePriceControllerTest extends WebTestCase
         return $stringKeyed;
     }
 
+    #[Override]
     protected static function getKernelClass(): string
     {
         return Kernel::class;

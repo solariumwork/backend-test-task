@@ -8,6 +8,7 @@ use App\Entity\Coupon;
 use App\Entity\Product;
 use App\ValueObject\Money;
 
+/** @psalm-suppress PossiblyUnusedProperty */
 final class CreateOrderDto
 {
     public function __construct(

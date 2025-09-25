@@ -8,6 +8,7 @@ use App\Repository\ProductRepository;
 use App\ValueObject\Money;
 use Doctrine\ORM\Mapping as ORM;
 
+/** @psalm-suppress UnusedProperty */
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\Table(name: 'product')]
 final class Product
@@ -32,16 +33,6 @@ final class Product
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): void
-    {
-        $this->id = $id;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
     }
 
     public function getPrice(): Money

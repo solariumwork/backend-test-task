@@ -9,11 +9,14 @@ use App\Entity\Product;
 use App\Service\PriceCalculatorService;
 use App\ValueObject\Money;
 use PHPUnit\Framework\TestCase;
+use Override;
 
+/** @psalm-suppress UnusedClass */
 class PriceCalculatorServiceTest extends TestCase
 {
     private PriceCalculatorService $calculator;
 
+    #[Override]
     protected function setUp(): void
     {
         $this->calculator = new PriceCalculatorService();

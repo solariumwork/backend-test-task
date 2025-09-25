@@ -19,7 +19,9 @@ use App\ValueObject\Money;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Override;
 
+/** @psalm-suppress UnusedClass */
 final class ShopServiceTest extends TestCase
 {
     private ShopService $shopService;
@@ -42,6 +44,7 @@ final class ShopServiceTest extends TestCase
     /** @var LoggerInterface&MockObject */
     private $logger;
 
+    #[Override]
     protected function setUp(): void
     {
         $this->productRepo = $this->createMock(ProductRepositoryInterface::class);
