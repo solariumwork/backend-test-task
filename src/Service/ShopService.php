@@ -21,7 +21,9 @@ final readonly class ShopService implements ShopServiceInterface
         private PriceCalculatorServiceInterface $calculator,
         private PaymentServiceInterface $paymentService,
         private OrderRepositoryInterface $orderRepository
-    ) {}
+    ) {
+        //
+    }
 
     public function calculatePrice(CalculatePriceRequest $dto): Money
     {

@@ -17,6 +17,9 @@ COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 ENV COMPOSER_CACHE_DIR=/tmp/composer-cache
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 # Setup php app user
 ARG USER_ID=1000
 RUN adduser -u ${USER_ID} -D -H app
@@ -27,4 +30,4 @@ WORKDIR /app
 
 EXPOSE 8337
 
-CMD ["php", "-S", "0.0.0.0:8337", "-t", "public", "public/index.php"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

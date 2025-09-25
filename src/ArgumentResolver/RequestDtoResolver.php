@@ -13,11 +13,11 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
-final class RequestDtoResolver implements ArgumentValueResolverInterface
+final readonly class RequestDtoResolver implements ArgumentValueResolverInterface
 {
     public function __construct(
-        private readonly SerializerInterface $serializer,
-        private readonly ValidatorInterface $validator
+        private SerializerInterface $serializer,
+        private ValidatorInterface  $validator
     ) {
         //
     }
@@ -37,8 +37,9 @@ final class RequestDtoResolver implements ArgumentValueResolverInterface
             throw new BadRequestHttpException('Invalid JSON: ' . $e->getMessage());
         }
 
-        $violations = $this->validator->validate($dto);
+        $this->trimStringProperties($dto);
 
+        $violations = $this->validator->validate($dto);
         if (count($violations) > 0) {
             $errors = [];
             foreach ($violations as $violation) {
@@ -49,5 +50,14 @@ final class RequestDtoResolver implements ArgumentValueResolverInterface
         }
 
         yield $dto;
+    }
+
+    private function trimStringProperties(object $dto): void
+    {
+        foreach (get_object_vars($dto) as $property => $value) {
+            if (is_string($value)) {
+                $dto->$property = trim($value);
+            }
+        }
     }
 }
