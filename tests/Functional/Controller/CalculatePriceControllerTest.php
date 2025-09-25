@@ -58,9 +58,10 @@ class CalculatePriceControllerTest extends WebTestCase
         ]);
 
         self::assertResponseStatusCodeSame(422);
+
         $data = json_decode($client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('error', $data);
-        $this->assertEquals('Invalid tax number', $data['error']);
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertContains('Invalid tax number', $data['errors']);
     }
 
     public function testCalculatePriceUnknownProduct(): void
@@ -72,8 +73,8 @@ class CalculatePriceControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(422);
         $data = json_decode($client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('error', $data);
-        $this->assertEquals('Product not found', $data['error']);
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertContains('Product not found', $data['errors']);
     }
 
     public function testCalculatePriceProductZero(): void
@@ -86,8 +87,7 @@ class CalculatePriceControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
         $data = json_decode($client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('errors', $data);
-        $this->assertArrayHasKey('product', $data['errors']);
-        $this->assertStringContainsString('positive', $data['errors']['product']);
+        $this->assertStringContainsString('positive', implode(' ', $data['errors']));
     }
 
     public function testCalculatePriceEmptyCouponCode(): void
@@ -112,8 +112,7 @@ class CalculatePriceControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
         $data = json_decode($client->getResponse()->getContent(), true);
         $this->assertArrayHasKey('errors', $data);
-        $this->assertArrayHasKey('product', $data['errors']);
-        $this->assertStringContainsString('blank', $data['errors']['product']);
+        $this->assertStringContainsString('blank', implode(' ', $data['errors']));
     }
 
     private function request(array $payload): KernelBrowser

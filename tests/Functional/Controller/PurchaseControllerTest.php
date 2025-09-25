@@ -81,8 +81,9 @@ class PurchaseControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
 
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('error', $data);
-        $this->assertEquals('Invalid tax number', $data['error']);
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertIsArray($data['errors']);
+        $this->assertEquals('Invalid tax number', $data['errors'][0]);
     }
 
     public function testPurchaseUnknownProduct(): void
@@ -105,8 +106,9 @@ class PurchaseControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
 
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('error', $data);
-        $this->assertEquals('Product not found', $data['error']);
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertIsArray($data['errors']);
+        $this->assertEquals('Product not found', $data['errors'][0]);
     }
 
     public function testPurchaseInvalidCoupon(): void
@@ -130,8 +132,9 @@ class PurchaseControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
 
         $data = json_decode($this->client->getResponse()->getContent(), true);
-        $this->assertArrayHasKey('error', $data);
-        $this->assertEquals('Invalid or inactive coupon', $data['error']);
+        $this->assertArrayHasKey('errors', $data);
+        $this->assertIsArray($data['errors']);
+        $this->assertEquals('Invalid or inactive coupon', $data['errors'][0]);
     }
 
     protected static function getKernelClass(): string

@@ -20,9 +20,7 @@ readonly class PaymentService implements PaymentServiceInterface
 
     public function pay(Money $money, string $processor): void
     {
-        $processor = strtolower($processor);
-
-        match ($processor) {
+        match (strtolower($processor)) {
             PaymentProcessorType::PAYPAL->value => $this->paypal->pay($money->getCents()),
             PaymentProcessorType::STRIPE->value => $this->processStripe($money),
             default => throw new \InvalidArgumentException('Unknown payment processor'),

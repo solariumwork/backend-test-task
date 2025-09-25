@@ -9,6 +9,7 @@ use App\Service\ShopServiceInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api/calculate-price', methods: ['POST'])]
@@ -29,7 +30,7 @@ final readonly class CalculatePriceController
         ),
         responses: [
             new OA\Response(
-                response: 200,
+                response: Response::HTTP_OK,
                 description: 'Returns the calculated price and currency',
                 content: new OA\JsonContent(
                     properties: [
@@ -40,8 +41,34 @@ final readonly class CalculatePriceController
                 )
             ),
             new OA\Response(
-                response: 400,
-                description: 'Validation error'
+                response: Response::HTTP_BAD_REQUEST,
+                description: 'Bad Request',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'errors',
+                            description: 'List of syntax/structure errors in the request',
+                            type: 'array',
+                            items: new OA\Items(type: 'string', example: "Invalid tax number")
+                        )
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: Response::HTTP_UNPROCESSABLE_ENTITY,
+                description: 'Unprocessable Entity',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'errors',
+                            description: 'List of validation errors',
+                            type: 'array',
+                            items: new OA\Items(type: 'string', example: "total: This value should be greater than 0.")
+                        )
+                    ],
+                    type: 'object'
+                )
             )
         ]
     )]

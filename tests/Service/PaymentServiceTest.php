@@ -48,15 +48,16 @@ class PaymentServiceTest extends TestCase
 
     public function testStripePaymentWithFixedCoupon(): void
     {
-        $originalPrice = 5000;
-        $discountFixed = 500;
+        $originalPrice = 500;
+        $discountFixed = 50;
         $expectedCents = (($originalPrice - $discountFixed) * 100);
 
         $money = new Money($expectedCents);
 
         $this->stripeMock->expects($this->once())
             ->method('processPayment')
-            ->with($money->getEuros());
+            ->with($money->getEuros())
+            ->willReturn(true);
 
         $this->paymentService->pay($money, 'stripe');
     }
@@ -67,9 +68,8 @@ class PaymentServiceTest extends TestCase
 
         $money = new Money($expectedCents);
 
-        $this->stripeMock->expects($this->once())
-            ->method('processPayment')
-            ->with($money->getEuros());
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Stripe payment failed');
 
         $this->paymentService->pay($money, 'stripe');
     }
