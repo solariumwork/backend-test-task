@@ -1,0 +1,171 @@
+# Variables
+@baseUrl = http://127.0.0.1:8337
+@product_iphone = 1
+@product_headphones = 2
+@product_case = 3
+
+### -------------------------
+### SUCCESS CASES
+### -------------------------
+
+### 1) Basic success — no coupon, Germany VAT (19%)
+### Expected calculate: 200 OK
+### { "price": 119.00, "currency": "EUR" }
+POST {{baseUrl}}/api/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_iphone}},
+  "taxNumber": "DE123456789",
+  "couponCode": null
+}
+
+###
+### Expected purchase: 200 OK
+### { "orderId": "<id>", "total": 119.00, "currency": "EUR" }
+POST {{baseUrl}}/api/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_iphone}},
+  "taxNumber": "DE123456789",
+  "couponCode": null,
+  "paymentProcessor": "paypal"
+}
+
+### 2) Percent coupon (P10) — DE (10% off)
+### Expected calculate: 200 OK
+### { "price": 107.10, "currency": "EUR" }
+POST {{baseUrl}}/api/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_iphone}},
+  "taxNumber": "DE123456789",
+  "couponCode": "P10"
+}
+
+###
+### Expected purchase: 200 OK
+### { "orderId": "<id>", "total": 107.10, "currency": "EUR" }
+POST {{baseUrl}}/api/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_iphone}},
+  "taxNumber": "DE123456789",
+  "couponCode": "P10",
+  "paymentProcessor": "stripe"
+}
+
+### 3) Fixed coupon (D15) — IT on product 2 (20€)
+### Expected calculate: 200 OK
+### { "price": 6.10, "currency": "EUR" }
+POST {{baseUrl}}/api/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_headphones}},
+  "taxNumber": "IT12345678900",
+  "couponCode": "D15"
+}
+
+###
+### Expected purchase: 200 OK
+### { "orderId": "<id>", "total": 6.10, "currency": "EUR" }
+POST {{baseUrl}}/api/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_headphones}},
+  "taxNumber": "IT12345678900",
+  "couponCode": "D15",
+  "paymentProcessor": "paypal"
+}
+
+### 4) 100% coupon (P100) — FR on product 1 (100€)
+### Expected calculate: 200 OK
+### { "price": 0.00, "currency": "EUR" }
+POST {{baseUrl}}/api/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_iphone}},
+  "taxNumber": "FRAB123456789",
+  "couponCode": "P100"
+}
+
+###
+### Expected purchase: 200 OK
+### { "orderId": "<id>", "total": 0.00, "currency": "EUR" }
+POST {{baseUrl}}/api/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_iphone}},
+  "taxNumber": "FRAB123456789",
+  "couponCode": "P100",
+  "paymentProcessor": "paypal"
+}
+
+### 5) Small percent coupon (CP6) — GR on product 1 (100€)
+### Expected calculate: 200 OK
+### { "price": 116.56, "currency": "EUR" }
+POST {{baseUrl}}/api/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_iphone}},
+  "taxNumber": "GR123456789",
+  "couponCode": "CP6"
+}
+
+###
+### Expected purchase: 200 OK
+### { "orderId": "<id>", "total": 116.56, "currency": "EUR" }
+POST {{baseUrl}}/api/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_iphone}},
+  "taxNumber": "GR123456789",
+  "couponCode": "CP6",
+  "paymentProcessor": "stripe"
+}
+
+### 6) No coupon, Italy product 3 (10€) -> IT VAT 22%
+### Expected calculate: 200 OK
+### { "price": 12.20, "currency": "EUR" }
+POST {{baseUrl}}/api/calculate-price
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_case}},
+  "taxNumber": "IT12345678900",
+  "couponCode": null
+}
+
+###
+### Expected purchase: 200 OK
+### { "orderId": "<id>", "total": 12.20, "currency": "EUR" }
+POST {{baseUrl}}/api/purchase
+Accept: application/json
+Content-Type: application/json
+
+{
+  "product": {{product_case}},
+  "taxNumber": "IT12345678900",
+  "couponCode": null,
+  "paymentProcessor": "paypal"
+}
