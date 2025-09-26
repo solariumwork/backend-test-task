@@ -6,4 +6,5 @@ namespace App\DTO;
 
 interface RequestDtoInterface
 {
+    //
 }

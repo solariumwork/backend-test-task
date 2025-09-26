@@ -31,15 +31,13 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
         }
 
         $exception = $event->getThrowable();
-        $response = [
-            'errors' => [$exception->getMessage()],
-        ];
+        $errors = $this->normalizeErrors((string) $exception->getMessage());
 
         $statusCode = $exception instanceof HttpExceptionInterface
             ? $exception->getStatusCode()
             : Response::HTTP_UNPROCESSABLE_ENTITY;
 
-        $event->setResponse(new JsonResponse($response, $statusCode));
+        $event->setResponse(new JsonResponse(['errors' => $errors], $statusCode));
     }
 
     private function isApiRequest(Request $request): bool
@@ -49,5 +47,29 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
 
         return str_contains($acceptHeader, 'application/json')
             || str_contains($contentType, 'application/json');
+    }
+
+    /**
+     * Приводим сообщение исключения к массиву ошибок.
+     *
+     * @return array<mixed>
+     */
+    private function normalizeErrors(string $rawMessage): array
+    {
+        $decoded = json_decode($rawMessage, true);
+        if (JSON_ERROR_NONE === json_last_error() && is_array($decoded)) {
+            return $this->isAssoc($decoded) ? $decoded : array_values($decoded);
+        }
+
+        return [$rawMessage];
+    }
+
+    private function isAssoc(array $arr): bool
+    {
+        if ([] === $arr) {
+            return false;
+        }
+
+        return !array_is_list($arr);
     }
 }

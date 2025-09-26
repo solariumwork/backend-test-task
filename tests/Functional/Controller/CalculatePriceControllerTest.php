@@ -77,9 +77,12 @@ class CalculatePriceControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(422);
         $data = $this->decodeResponse($client);
+
         $this->assertArrayHasKey('errors', $data);
         $this->assertIsArray($data['errors']);
-        $this->assertContains('Invalid tax number', $data['errors']);
+
+        $this->assertArrayHasKey('taxNumber', $data['errors']);
+        $this->assertStringContainsString('Invalid tax number', (string) $data['errors']['taxNumber']);
     }
 
     public function testCalculatePriceUnknownProduct(): void

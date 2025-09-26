@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /** @psalm-suppress UnusedClass */
@@ -20,6 +21,7 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {
+        //
     }
 
     #[\Override]
@@ -36,44 +38,71 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
     #[\Override]
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
-        $data = $request->getContent();
+        $type = $this->getDtoTypeOrFail($argument);
+        $dto = $this->deserializeDto($request->getContent(), $type);
 
+        $this->normalizeStringProperties($dto);
+        $this->validateDto($dto);
+
+        yield $dto;
+    }
+
+    private function getDtoTypeOrFail(ArgumentMetadata $argument): string
+    {
         $type = $argument->getType();
         if (!is_string($type)) {
             throw new BadRequestHttpException('Missing or invalid DTO type for argument.');
         }
 
+        return $type;
+    }
+
+    private function deserializeDto(string $data, string $type): RequestDtoInterface
+    {
         try {
-            $dto = $this->serializer->deserialize((string) $data, $type, 'json');
+            $dto = $this->serializer->deserialize($data, $type, 'json');
         } catch (\Throwable $e) {
-            throw new BadRequestHttpException('Invalid JSON: '.$e->getMessage());
+            throw new BadRequestHttpException('Invalid JSON: ' . $e->getMessage());
         }
 
         if (!$dto instanceof RequestDtoInterface) {
             throw new BadRequestHttpException('Deserialized object is not a valid request DTO.');
         }
 
-        $this->trimStringProperties($dto);
-
-        $violations = $this->validator->validate($dto);
-        if (count($violations) > 0) {
-            $errors = [];
-            foreach ($violations as $violation) {
-                $errors[$violation->getPropertyPath()] = $violation->getMessage();
-            }
-
-            throw new UnprocessableEntityHttpException((string) json_encode($errors));
-        }
-
-        yield $dto;
+        return $dto;
     }
 
-    private function trimStringProperties(object $dto): void
+    private function normalizeStringProperties(object $dto): void
     {
         foreach (get_object_vars($dto) as $property => $value) {
             if (is_string($value)) {
                 $dto->$property = trim($value);
             }
         }
+    }
+
+    private function validateDto(RequestDtoInterface $dto): void
+    {
+        $violations = $this->validator->validate($dto);
+        if (count($violations) === 0) {
+            return;
+        }
+
+        $errors = $this->mapViolationsToArray($violations);
+        throw new UnprocessableEntityHttpException((string) json_encode($errors));
+    }
+
+    /**
+     * @param ConstraintViolationListInterface $violations
+     * @return array<string, string>
+     */
+    private function mapViolationsToArray(ConstraintViolationListInterface $violations): array
+    {
+        $errors = [];
+        foreach ($violations as $violation) {
+            $errors[$violation->getPropertyPath()] = $violation->getMessage();
+        }
+
+        return $errors;
     }
 }

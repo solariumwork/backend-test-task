@@ -85,7 +85,9 @@ class PurchaseControllerTest extends WebTestCase
         $data = $this->decodeResponse();
         $this->assertArrayHasKey('errors', $data);
         $this->assertIsArray($data['errors']);
-        $this->assertEquals('Invalid tax number', $data['errors'][0]);
+
+        $this->assertArrayHasKey('taxNumber', $data['errors']);
+        $this->assertStringContainsString('Invalid tax number', (string) $data['errors']['taxNumber']);
     }
 
     public function testPurchaseUnknownProduct(): void

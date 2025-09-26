@@ -3,7 +3,7 @@ RUN apk add --no-cache git zip bash
 
 # Setup php extensions
 RUN apk add --no-cache postgresql-dev \
-    && docker-php-ext-install pdo_pgsql pdo_mysql
+    && docker-php-ext-install pdo_pgsql pdo_mysql bcmath
 
 # Xdebug
 RUN apk add --no-cache $PHPIZE_DEPS linux-headers \

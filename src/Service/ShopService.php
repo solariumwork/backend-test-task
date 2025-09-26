@@ -27,6 +27,7 @@ final readonly class ShopService implements ShopServiceInterface
         private OrderRepositoryInterface $orderRepository,
         private LoggerInterface $logger,
     ) {
+        //
     }
 
     #[\Override]
