@@ -11,9 +11,14 @@ use App\ValueObject\Money;
 interface PriceCalculatorServiceInterface
 {
     /**
-     * Calculate the final price of a product, taking into account a coupon and tax.
+     * Calculate total price including discount and tax.
+     *
+     * @param Product $product
+     * @param string $taxNumber Valid tax number
+     * @param Coupon|null $coupon Optional coupon
+     * @return Money
      *
      * @throws \InvalidArgumentException if the tax number is invalid
      */
-    public function calculate(Product $product, string $taxNumber, ?Coupon $coupon = null): Money;
+    public function calculateTotalAmount(Product $product, string $taxNumber, ?Coupon $coupon = null): Money;
 }

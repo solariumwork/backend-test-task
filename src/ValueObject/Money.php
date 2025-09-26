@@ -33,6 +33,6 @@ final readonly class Money
 
     public function getEuros(): float
     {
-        return $this->cents / 100;
+        return (float) number_format($this->cents / 100, 2, '.', '');
     }
 }

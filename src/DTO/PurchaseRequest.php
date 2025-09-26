@@ -7,6 +7,7 @@ namespace App\DTO;
 use App\Enum\PaymentProcessorType;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\Constraints as AppAssert;
 
 #[OA\Schema(
     required: ['product', 'taxNumber', 'paymentProcessor']
@@ -21,7 +22,7 @@ final class PurchaseRequest implements RequestDtoInterface
 
     #[Assert\NotBlank]
     #[Assert\Type('string')]
-    #[Assert\Length(max: 20)]
+    #[AppAssert\TaxNumber]
     #[OA\Property(description: 'Tax number of the customer', type: 'string', example: 'DE123456789')]
     public string $taxNumber;
 

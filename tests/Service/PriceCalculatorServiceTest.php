@@ -25,7 +25,7 @@ class PriceCalculatorServiceTest extends TestCase
     {
         $product = new Product('TestPhone', new Money(10000));
 
-        $money = $this->calculator->calculate($product, 'DE123456789');
+        $money = $this->calculator->calculateTotalAmount($product, 'DE123456789');
 
         $expectedCents = (int) round(10000 * 1.19);
         $this->assertEquals($expectedCents, $money->getCents());
@@ -36,7 +36,7 @@ class PriceCalculatorServiceTest extends TestCase
         $product = new Product('TestPhone', new Money(10000));
         $coupon = new Coupon('P10', Coupon::TYPE_PERCENT, 10);
 
-        $money = $this->calculator->calculate($product, 'IT12345678901', $coupon);
+        $money = $this->calculator->calculateTotalAmount($product, 'IT12345678901', $coupon);
 
         $totalAfterDiscount = 10000 - (int) round(10000 * 0.10);
         $expectedCents = (int) round($totalAfterDiscount * 1.22);
@@ -48,7 +48,7 @@ class PriceCalculatorServiceTest extends TestCase
         $product = new Product('TestPhone', new Money(5000));
         $coupon = new Coupon('D5', Coupon::TYPE_FIXED, 500);
 
-        $money = $this->calculator->calculate($product, 'FRAB123456789', $coupon);
+        $money = $this->calculator->calculateTotalAmount($product, 'FRAB123456789', $coupon);
 
         $totalAfterDiscount = 5000 - 500;
         $expectedCents = (int) round($totalAfterDiscount * 1.20);
@@ -60,7 +60,7 @@ class PriceCalculatorServiceTest extends TestCase
         $product = new Product('CheapItem', new Money(300));
         $coupon = new Coupon('D500', Coupon::TYPE_FIXED, 500);
 
-        $money = $this->calculator->calculate($product, 'GR123456789', $coupon);
+        $money = $this->calculator->calculateTotalAmount($product, 'GR123456789', $coupon);
 
         $expectedCents = 0;
         $this->assertEquals($expectedCents, $money->getCents());
@@ -71,7 +71,7 @@ class PriceCalculatorServiceTest extends TestCase
         $product = new Product('Expensive', new Money(10000));
         $coupon = new Coupon('P100', Coupon::TYPE_PERCENT, 100);
 
-        $money = $this->calculator->calculate($product, 'GR123456789', $coupon);
+        $money = $this->calculator->calculateTotalAmount($product, 'GR123456789', $coupon);
 
         $expectedCents = 0;
         $this->assertEquals($expectedCents, $money->getCents());
@@ -83,6 +83,6 @@ class PriceCalculatorServiceTest extends TestCase
         $this->expectExceptionMessage('Invalid tax number');
 
         $product = new Product('TestPhone', new Money(10000));
-        $this->calculator->calculate($product, 'INVALID123');
+        $this->calculator->calculateTotalAmount($product, 'INVALID123');
     }
 }

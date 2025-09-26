@@ -12,7 +12,7 @@ use App\ValueObject\Money;
 class PriceCalculatorService implements PriceCalculatorServiceInterface
 {
     #[\Override]
-    public function calculate(Product $product, string $taxNumber, ?Coupon $coupon = null): Money
+    public function calculateTotalAmount(Product $product, string $taxNumber, ?Coupon $coupon = null): Money
     {
         $totalCents = $this->calculateFinalCents(
             $product->getPrice()->getCents(),
@@ -25,12 +25,10 @@ class PriceCalculatorService implements PriceCalculatorServiceInterface
 
     private function calculateFinalCents(int $priceCents, ?Coupon $coupon, string $taxNumber): int
     {
-        $priceCentsAfterDiscount = $coupon
-            ? $this->applyDiscount($priceCents, $coupon)
-            : $priceCents;
+        $discountedPrice = $coupon ? $this->applyDiscount($priceCents, $coupon) : $priceCents;
         $taxRate = TaxRate::fromTaxNumber($taxNumber);
 
-        return $this->applyTax($priceCentsAfterDiscount, $taxRate);
+        return $this->applyTax($discountedPrice, $taxRate);
     }
 
     private function applyDiscount(int $priceCents, Coupon $coupon): int
@@ -49,6 +47,7 @@ class PriceCalculatorService implements PriceCalculatorServiceInterface
 
     private function applyTax(int $priceCents, float $taxRate): int
     {
-        return (int) round($priceCents * (1 + $taxRate));
+        $total = $priceCents * (1 + $taxRate);
+        return (int) round($total);
     }
 }

@@ -13,11 +13,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /** @psalm-suppress UnusedClass */
-#[Route('/api/calculate-price', methods: ['POST'])]
+#[Route('/api/calculate-price', name: 'calculate_price', methods: ['POST'])]
 final readonly class CalculatePriceController
 {
     public function __construct(private ShopServiceInterface $shopService)
     {
+        //
     }
 
     #[OA\Post(
@@ -41,21 +42,6 @@ final readonly class CalculatePriceController
                 )
             ),
             new OA\Response(
-                response: Response::HTTP_BAD_REQUEST,
-                description: 'Bad Request',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'errors',
-                            description: 'List of syntax/structure errors in the request',
-                            type: 'array',
-                            items: new OA\Items(type: 'string', example: 'Invalid tax number')
-                        ),
-                    ],
-                    type: 'object'
-                )
-            ),
-            new OA\Response(
                 response: Response::HTTP_UNPROCESSABLE_ENTITY,
                 description: 'Unprocessable Entity',
                 content: new OA\JsonContent(
@@ -72,6 +58,12 @@ final readonly class CalculatePriceController
             ),
         ]
     )]
+    /**
+     * Calculates the price for a product and returns it as JSON.
+     *
+     * @throws \Throwable Exceptions (invalid product, invalid coupon, etc.)
+     *   are handled by ApiExceptionSubscriber and returned as 422 JSON responses.
+     */
     public function __invoke(CalculatePriceRequest $dto): JsonResponse
     {
         $total = $this->shopService->calculatePrice($dto);
@@ -79,6 +71,6 @@ final readonly class CalculatePriceController
         return new JsonResponse([
             'price' => $total->getEuros(),
             'currency' => $total->getCurrency(),
-        ]);
+        ], Response::HTTP_OK);
     }
 }

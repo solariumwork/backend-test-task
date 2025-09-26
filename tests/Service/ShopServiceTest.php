@@ -80,7 +80,7 @@ final class ShopServiceTest extends TestCase
             ->willReturn($product);
 
         $this->calculator->expects($this->once())
-            ->method('calculate')
+            ->method('calculateTotalAmount')
             ->with($product, 'DE123456789', null)
             ->willReturn($money);
 
@@ -111,7 +111,7 @@ final class ShopServiceTest extends TestCase
             ->willReturn($coupon);
 
         $this->calculator->expects($this->once())
-            ->method('calculate')
+            ->method('calculateTotalAmount')
             ->with($product, 'DE123456789', $coupon)
             ->willReturn($money);
 
@@ -144,7 +144,7 @@ final class ShopServiceTest extends TestCase
             ->willReturn($coupon);
 
         $this->calculator->expects($this->once())
-            ->method('calculate')
+            ->method('calculateTotalAmount')
             ->with($product, 'DE123456789', $coupon)
             ->willReturn($money);
 
@@ -175,7 +175,7 @@ final class ShopServiceTest extends TestCase
         $money = new Money(11900);
 
         $this->productRepo->method('findOrFail')->willReturn($product);
-        $this->calculator->method('calculate')->willReturn($money);
+        $this->calculator->method('calculateTotalAmount')->willReturn($money);
         $this->orderRepo->method('create')->willReturn($order);
 
         $this->paymentService->method('pay')
