@@ -27,7 +27,7 @@ final class PurchaseRequest implements RequestDtoInterface
     public string $taxNumber;
 
     #[Assert\Type('string')]
-    #[Assert\Length(max: 30)]
+    #[Assert\Length(max: 100)]
     #[OA\Property(description: 'Optional coupon code for discount', type: 'string', example: 'SUMMER2025', nullable: true)]
     public ?string $couponCode = null;
 

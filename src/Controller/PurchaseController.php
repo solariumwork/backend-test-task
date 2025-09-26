@@ -13,15 +13,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /** @psalm-suppress UnusedClass */
-#[Route('/api/purchase', methods: ['POST'])]
+#[Route('/api/purchase', name: 'purchase', methods: ['POST'])]
 final readonly class PurchaseController
 {
     public function __construct(private ShopServiceInterface $shopService)
     {
+        //
     }
 
     #[OA\Post(
-        path: '/api/purchase',
         description: 'Processes a purchase, applying taxes and optional coupon discounts.',
         summary: 'Make a purchase for a product',
         requestBody: new OA\RequestBody(
@@ -37,21 +37,6 @@ final readonly class PurchaseController
                         new OA\Property(property: 'orderId', description: 'Unique ID of the order', type: 'integer', example: 101),
                         new OA\Property(property: 'total', description: 'Total amount in euros', type: 'number', format: 'float', example: 49.99),
                         new OA\Property(property: 'currency', description: 'Currency code', type: 'string', example: 'EUR'),
-                    ],
-                    type: 'object'
-                )
-            ),
-            new OA\Response(
-                response: Response::HTTP_BAD_REQUEST,
-                description: 'Bad Request',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'errors',
-                            description: 'List of syntax/structure errors in the request',
-                            type: 'array',
-                            items: new OA\Items(type: 'string', example: 'Invalid tax number')
-                        ),
                     ],
                     type: 'object'
                 )
@@ -73,6 +58,23 @@ final readonly class PurchaseController
             ),
         ]
     )]
+    /**
+     * Processes a purchase for a product and returns order details as JSON.
+     *
+     * Delegates the business logic to ShopService. Exceptions such as invalid product,
+     * invalid coupon, or payment failure are caught by ApiExceptionSubscriber and returned
+     * as JSON with status 422 (Unprocessable Entity).
+     *
+     * @param PurchaseRequest $dto Validated purchase request DTO
+     *
+     * @return JsonResponse{
+     *     orderId: int,
+     *     total: float,
+     *     currency: string
+     * }
+     *
+     * @throws \Throwable Only unexpected errors; all known exceptions are handled globally.
+     */
     public function __invoke(PurchaseRequest $dto): JsonResponse
     {
         $order = $this->shopService->purchase($dto);

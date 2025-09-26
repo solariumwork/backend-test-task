@@ -22,7 +22,6 @@ final readonly class CalculatePriceController
     }
 
     #[OA\Post(
-        path: '/api/calculate-price',
         description: 'Calculates the total price including taxes and optional coupon discounts.',
         summary: 'Calculate total price for a product',
         requestBody: new OA\RequestBody(

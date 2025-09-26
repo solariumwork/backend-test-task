@@ -58,12 +58,11 @@ final readonly class ShopService implements ShopServiceInterface
 
     private function handlePayment(Order $order, Money $amount, string $processor): void
     {
+        $status = PaymentStatus::FAILED;
         try {
             $this->paymentService->pay($amount, $processor);
             $status = PaymentStatus::PAID;
         } catch (\Throwable $e) {
-            $status = PaymentStatus::FAILED;
-
             $payload = [
                 'orderId' => $order->getId(),
                 'amount' => $amount->getEuros(),
@@ -74,9 +73,7 @@ final readonly class ShopService implements ShopServiceInterface
             $this->logger->error('Payment failed', $payload);
             throw $e;
         } finally {
-            if ($status !== null) {
-                $this->updatePaymentStatus($order, $status);
-            }
+            $this->updatePaymentStatus($order, $status);
         }
     }
 
