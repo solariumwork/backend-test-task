@@ -7,12 +7,12 @@ namespace App\Tests\Functional\Controller;
 use App\Entity\Coupon;
 use App\Entity\Product;
 use App\Kernel;
+use App\Tests\Functional\FunctionalTestCase;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /** @psalm-suppress UnusedClass */
-class PurchaseControllerTest extends WebTestCase
+class PurchaseControllerTest extends FunctionalTestCase
 {
     private KernelBrowser $client;
 

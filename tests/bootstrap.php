@@ -19,22 +19,39 @@ if ('test' === $_SERVER['APP_ENV']) {
     $application = new Application($kernel);
     $application->setAutoExit(false);
 
-    $application->run(new ArrayInput([
-        'command' => 'doctrine:database:create',
-        '--env' => 'test',
-        '--if-not-exists' => true,
-    ]));
+    try {
+        $application->run(new ArrayInput([
+            'command' => 'doctrine:query:sql',
+            'sql'     => "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'app_test' AND pid <> pg_backend_pid();",
+            '--env'   => 'test',
+        ]));
 
-    $application->run(new ArrayInput([
-        'command' => 'doctrine:migrations:migrate',
-        '--env' => 'test',
-        '--no-interaction' => true,
-    ]));
+        $application->run(new ArrayInput([
+            'command' => 'doctrine:database:drop',
+            '--force' => true,
+            '--if-exists' => true,
+            '--env' => 'test',
+        ]));
 
-    $application->run(new ArrayInput([
-        'command' => 'doctrine:fixtures:load',
-        '--env' => 'test',
-        '--group' => ['test'],
-        '--no-interaction' => true,
-    ]));
+        $application->run(new ArrayInput([
+            'command' => 'doctrine:database:create',
+            '--if-not-exists' => true,
+            '--env' => 'test',
+        ]));
+
+        $application->run(new ArrayInput([
+            'command' => 'doctrine:migrations:migrate',
+            '--env' => 'test',
+            '--no-interaction' => true,
+        ]));
+
+        $application->run(new ArrayInput([
+            'command' => 'doctrine:fixtures:load',
+            '--env' => 'test',
+            '--group' => ['test'],
+            '--no-interaction' => true,
+        ]));
+    } catch (\Throwable $e) {
+        throw new \RuntimeException('Fixtures load failed: ' . $e->getMessage());
+    }
 }

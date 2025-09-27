@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Embeddable]
 final readonly class Money
 {
-    #[ORM\Column(name: 'price_cents', type: 'integer')]
+    #[ORM\Column(name: 'cents', type: 'integer')]
     private int $cents;
 
     #[ORM\Column(name: 'currency', type: 'string', length: 3)]
