@@ -65,9 +65,9 @@ class PriceCalculatorService implements PriceCalculatorServiceInterface
     private function applyDiscount(string $priceCents, Coupon $coupon): string
     {
         $discount = $this->calculateDiscount($priceCents, $coupon);
-        $discounted = bcsub($priceCents, $discount, self::BC_SCALE);
+        $discountedPrice = bcsub($priceCents, $discount, self::BC_SCALE);
 
-        return bccomp($discounted, '0', self::BC_SCALE) < 0 ? '0' : $discounted;
+        return bccomp($discountedPrice, '0', self::BC_SCALE) < 0 ? '0' : $discountedPrice;
     }
 
     /**
