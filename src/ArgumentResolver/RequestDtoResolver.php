@@ -21,7 +21,6 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
         private SerializerInterface $serializer,
         private ValidatorInterface $validator,
     ) {
-        //
     }
 
     #[\Override]
@@ -62,7 +61,7 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
         try {
             $dto = $this->serializer->deserialize($data, $type, 'json');
         } catch (\Throwable $e) {
-            throw new BadRequestHttpException('Invalid JSON: ' . $e->getMessage());
+            throw new BadRequestHttpException('Invalid JSON: '.$e->getMessage());
         }
 
         if (!$dto instanceof RequestDtoInterface) {
@@ -84,7 +83,7 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
     private function validateDto(RequestDtoInterface $dto): void
     {
         $violations = $this->validator->validate($dto);
-        if (count($violations) === 0) {
+        if (0 === count($violations)) {
             return;
         }
 
@@ -93,14 +92,13 @@ final readonly class RequestDtoResolver implements ArgumentValueResolverInterfac
     }
 
     /**
-     * @param ConstraintViolationListInterface $violations
      * @return array<string, string>
      */
     private function mapViolationsToArray(ConstraintViolationListInterface $violations): array
     {
         $errors = [];
         foreach ($violations as $violation) {
-            $errors[$violation->getPropertyPath()] = $violation->getMessage();
+            $errors[$violation->getPropertyPath()] = (string) $violation->getMessage();
         }
 
         return $errors;

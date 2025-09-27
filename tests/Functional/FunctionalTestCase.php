@@ -10,6 +10,7 @@ abstract class FunctionalTestCase extends WebTestCase
 {
     protected static bool $dbInitialized = false;
 
+    #[\Override]
     public static function setUpBeforeClass(): void
     {
         if (!self::$dbInitialized) {

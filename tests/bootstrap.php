@@ -22,8 +22,8 @@ if ('test' === $_SERVER['APP_ENV']) {
     try {
         $application->run(new ArrayInput([
             'command' => 'doctrine:query:sql',
-            'sql'     => "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'app_test' AND pid <> pg_backend_pid();",
-            '--env'   => 'test',
+            'sql' => "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'app_test' AND pid <> pg_backend_pid();",
+            '--env' => 'test',
         ]));
 
         $application->run(new ArrayInput([
@@ -51,7 +51,7 @@ if ('test' === $_SERVER['APP_ENV']) {
             '--group' => ['test'],
             '--no-interaction' => true,
         ]));
-    } catch (\Throwable $e) {
-        throw new \RuntimeException('Fixtures load failed: ' . $e->getMessage());
+    } catch (Throwable $e) {
+        throw new RuntimeException('Fixtures load failed: '.$e->getMessage());
     }
 }

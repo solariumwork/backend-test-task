@@ -13,10 +13,8 @@ interface PriceCalculatorServiceInterface
     /**
      * Calculate total price including discount and tax.
      *
-     * @param Product $product
-     * @param string $taxNumber Valid tax number
-     * @param Coupon|null $coupon Optional coupon
-     * @return Money
+     * @param string      $taxNumber Valid tax number
+     * @param Coupon|null $coupon    Optional coupon
      *
      * @throws \InvalidArgumentException if the tax number is invalid
      */

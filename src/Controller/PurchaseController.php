@@ -18,7 +18,6 @@ final readonly class PurchaseController
 {
     public function __construct(private ShopServiceInterface $shopService)
     {
-        //
     }
 
     #[OA\Post(
@@ -73,7 +72,7 @@ final readonly class PurchaseController
      *     currency: string
      * }
      *
-     * @throws \Throwable Only unexpected errors; all known exceptions are handled globally.
+     * @throws \Throwable only unexpected errors; all known exceptions are handled globally
      */
     public function __invoke(PurchaseRequest $dto): JsonResponse
     {

@@ -87,7 +87,8 @@ class PurchaseControllerTest extends FunctionalTestCase
         $this->assertIsArray($data['errors']);
 
         $this->assertArrayHasKey('taxNumber', $data['errors']);
-        $this->assertStringContainsString('Invalid tax number', (string) $data['errors']['taxNumber']);
+        $this->assertIsString($data['errors']['taxNumber']);
+        $this->assertStringContainsString('Invalid tax number', $data['errors']['taxNumber']);
     }
 
     public function testPurchaseUnknownProduct(): void
@@ -159,8 +160,10 @@ class PurchaseControllerTest extends FunctionalTestCase
             $this->fail('Invalid JSON response');
         }
 
+        /** @var array<int|string, mixed> $decoded */
         $decodedStringKeys = [];
         foreach ($decoded as $key => $value) {
+            /* @var int|string $key */
             $decodedStringKeys[(string) $key] = $value;
         }
 

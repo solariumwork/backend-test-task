@@ -64,6 +64,9 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
         return [$rawMessage];
     }
 
+    /**
+     * @param array<mixed, mixed> $arr
+     */
     private function isAssoc(array $arr): bool
     {
         if ([] === $arr) {

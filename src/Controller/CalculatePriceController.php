@@ -18,7 +18,6 @@ final readonly class CalculatePriceController
 {
     public function __construct(private ShopServiceInterface $shopService)
     {
-        //
     }
 
     #[OA\Post(
@@ -61,7 +60,7 @@ final readonly class CalculatePriceController
      * Calculates the price for a product and returns it as JSON.
      *
      * @throws \Throwable Exceptions (invalid product, invalid coupon, etc.)
-     *   are handled by ApiExceptionSubscriber and returned as 422 JSON responses.
+     *                    are handled by ApiExceptionSubscriber and returned as 422 JSON responses.
      */
     public function __invoke(CalculatePriceRequest $dto): JsonResponse
     {

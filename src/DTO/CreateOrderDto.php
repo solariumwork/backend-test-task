@@ -18,7 +18,6 @@ final class CreateOrderDto
         public string $paymentProcessor,
         public ?Coupon $coupon = null,
     ) {
-        //
     }
 
     public static function fromPurchaseRequest(

@@ -52,16 +52,16 @@ class PriceCalculatorService implements PriceCalculatorServiceInterface
     private function calculateDiscount(int $priceCents, Coupon $coupon): int
     {
         return match ($coupon->getType()) {
-            Coupon::TYPE_PERCENT => (function() use ($priceCents, $coupon): int {
-                $discountRate = bcdiv((string)$coupon->getValue(), '100', 4);
-                $discountCents = bcmul((string)$priceCents, $discountRate, 0);
+            Coupon::TYPE_PERCENT => (function () use ($priceCents, $coupon): int {
+                $discountRate = bcdiv((string) $coupon->getValue(), '100', 4);
+                $discountCents = bcmul((string) $priceCents, $discountRate, 0);
+
                 return (int) $discountCents;
             })(),
             Coupon::TYPE_FIXED => $coupon->getValue(),
             default => 0,
         };
     }
-
 
     /*
      * Example calculation:
@@ -78,6 +78,6 @@ class PriceCalculatorService implements PriceCalculatorServiceInterface
         $taxMultiplier = bcadd('1', $taxRateAsString, 4);
         $totalCentsWithTax = bcmul($priceCentsAsString, $taxMultiplier, 4);
 
-        return (int) round((float)$totalCentsWithTax, 0, PHP_ROUND_HALF_UP);
+        return (int) round((float) $totalCentsWithTax, 0, PHP_ROUND_HALF_UP);
     }
 }

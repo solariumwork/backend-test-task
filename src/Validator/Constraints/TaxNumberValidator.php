@@ -8,8 +8,10 @@ use App\Enum\TaxRate;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
+/** @psalm-suppress UnusedClass */
 final class TaxNumberValidator extends ConstraintValidator
 {
+    #[\Override]
     public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof TaxNumber || $this->isEmpty($value)) {
@@ -18,6 +20,7 @@ final class TaxNumberValidator extends ConstraintValidator
 
         if (!is_string($value)) {
             $this->addViolation($constraint);
+
             return;
         }
 
@@ -33,7 +36,7 @@ final class TaxNumberValidator extends ConstraintValidator
         return null === $value || '' === $value;
     }
 
-    private function addViolation(Constraint $constraint): void
+    private function addViolation(TaxNumber $constraint): void
     {
         $this->context->buildViolation($constraint->message)
             ->addViolation();

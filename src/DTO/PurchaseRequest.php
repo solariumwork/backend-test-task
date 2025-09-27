@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\DTO;
 
 use App\Enum\PaymentProcessorType;
+use App\Validator\Constraints as AppAssert;
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Validator\Constraints as AppAssert;
 
 #[OA\Schema(
     required: ['product', 'taxNumber', 'paymentProcessor']

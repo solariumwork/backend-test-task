@@ -15,11 +15,11 @@ interface PaymentServiceInterface
      *   - 'paypal' — uses PaypalPaymentProcessor and expects cents as integer.
      *   - 'stripe' — uses StripePaymentProcessor and expects euros as float.
      *
-     * @param Money $money Amount to charge.
-     * @param string $processor Payment processor to use (case-insensitive).
+     * @param Money  $money     amount to charge
+     * @param string $processor payment processor to use (case-insensitive)
      *
-     * @throws \InvalidArgumentException If the processor is unknown.
-     * @throws \RuntimeException If the payment fails (e.g., Stripe returns false).
+     * @throws \InvalidArgumentException if the processor is unknown
+     * @throws \RuntimeException         If the payment fails (e.g., Stripe returns false).
      */
     public function pay(Money $money, string $processor): void;
 }

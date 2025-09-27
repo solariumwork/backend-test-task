@@ -27,13 +27,13 @@ final readonly class ShopService implements ShopServiceInterface
         private OrderRepositoryInterface $orderRepository,
         private LoggerInterface $logger,
     ) {
-        //
     }
 
     #[\Override]
     public function calculatePrice(CalculatePriceRequest $dto): Money
     {
         [$product, $coupon] = $this->retrieveProductAndCoupon($dto->product, $dto->couponCode);
+
         return $this->calculator->calculateTotalAmount($product, $dto->taxNumber, $coupon);
     }
 
@@ -54,6 +54,7 @@ final readonly class ShopService implements ShopServiceInterface
     private function createPendingOrder(PurchaseRequest $dto, Product $product, Money $total, ?Coupon $coupon): Order
     {
         $orderDto = CreateOrderDto::fromPurchaseRequest($dto, $product, $total, $coupon);
+
         return $this->orderRepository->create($orderDto);
     }
 
@@ -85,6 +86,7 @@ final readonly class ShopService implements ShopServiceInterface
     {
         $product = $this->productRepository->findOrFail($productId);
         $coupon = $couponCode ? $this->couponRepository->findActiveOrFail($couponCode) : null;
+
         return [$product, $coupon];
     }
 
@@ -93,7 +95,7 @@ final readonly class ShopService implements ShopServiceInterface
         match ($status) {
             PaymentStatus::PAID => $order->markAsPaid(),
             PaymentStatus::FAILED => $order->markAsFailed(),
-            default => null
+            default => null,
         };
 
         $this->orderRepository->save($order);
