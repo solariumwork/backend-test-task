@@ -82,6 +82,6 @@ final readonly class PurchaseController
             'orderId' => $order->getId(),
             'total' => $order->getTotal()->getEuros(),
             'currency' => $order->getTotal()->getCurrency(),
-        ]);
+        ], Response::HTTP_OK);
     }
 }

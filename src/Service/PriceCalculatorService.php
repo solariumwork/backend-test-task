@@ -11,11 +11,15 @@ use App\ValueObject\Money;
 
 class PriceCalculatorService implements PriceCalculatorServiceInterface
 {
+    private const int BC_SCALE = 8;
+
     #[\Override]
     public function calculateTotalAmount(Product $product, string $taxNumber, ?Coupon $coupon = null): Money
     {
+        $priceCents = (string) $product->getPrice()->getCents();
+
         $totalCents = $this->calculateFinalCents(
-            $product->getPrice()->getCents(),
+            $priceCents,
             $coupon,
             $taxNumber
         );
@@ -23,61 +27,121 @@ class PriceCalculatorService implements PriceCalculatorServiceInterface
         return new Money($totalCents, $product->getPrice()->getCurrency());
     }
 
-    private function calculateFinalCents(int $priceCents, ?Coupon $coupon, string $taxNumber): int
-    {
-        $discountedPrice = $coupon ? $this->applyDiscount($priceCents, $coupon) : $priceCents;
-        $taxRate = TaxRate::fromTaxNumber($taxNumber);
-
-        return $this->applyTax($discountedPrice, $taxRate);
-    }
-
-    private function applyDiscount(int $priceCents, Coupon $coupon): int
-    {
-        return max(0, $priceCents - $this->calculateDiscount($priceCents, $coupon));
-    }
-
-    /*
-     * Example calculation:
+    /**
+     * Calculate the final price in cents, rounding once at the end.
      *
-     * Percent coupon:
-     * $priceCents         = 10000        // 100 € in cents
-     * $coupon->getValue() = 15          // 15% discount
-     * $discountRate       = bcdiv((string)$coupon->getValue(), '100', 4) // 0.15
-     * $discountCents      = bcmul((string)$priceCents, $discountRate, 0) // 10000 * 0.15 = 1500 cents (15 €)
+     * EXAMPLE FLOW:
+     * 1. priceCents = "10000"
+     * 2. applyDiscount -> "9400"
+     * 3. applyTax with taxRate=0.24 -> "11656"
+     * 4. Rounded integer = 11656
      *
-     * Fixed coupon:
-     * $coupon->getValue() = 2000        // 20 € fixed discount in cents
-     * $discountCents      = 2000
+     * @param numeric-string $priceCents
      */
-    private function calculateDiscount(int $priceCents, Coupon $coupon): int
+    private function calculateFinalCents(string $priceCents, ?Coupon $coupon, string $taxNumber): int
+    {
+        $discountedPrice = $coupon
+            ? $this->applyDiscount($priceCents, $coupon)
+            : $priceCents;
+
+        $taxRate = TaxRate::fromTaxNumber($taxNumber);
+        $taxedPrice = $this->applyTax($discountedPrice, $taxRate);
+
+        return (int) bcadd($taxedPrice, '0.5', 0);
+    }
+
+    /**
+     * Apply a coupon to the price.
+     *
+     * EXAMPLE:
+     *  - priceCents = "10000"
+     *  - percent coupon 6% -> discount = 600
+     *  - discounted price = 9400
+     *
+     * @param numeric-string $priceCents
+     *
+     * @return numeric-string
+     */
+    private function applyDiscount(string $priceCents, Coupon $coupon): string
+    {
+        $discount = $this->calculateDiscount($priceCents, $coupon);
+        $discounted = bcsub($priceCents, $discount, self::BC_SCALE);
+
+        return bccomp($discounted, '0', self::BC_SCALE) < 0 ? '0' : $discounted;
+    }
+
+    /**
+     * Calculate the discount amount.
+     *
+     * EXAMPLE:
+     *  - TYPE_PERCENT: 10000 * 6% = 600
+     *  - TYPE_FIXED: min(600, 10000) = 600
+     *
+     * @param numeric-string $priceCents
+     *
+     * @return numeric-string
+     */
+    private function calculateDiscount(string $priceCents, Coupon $coupon): string
     {
         return match ($coupon->getType()) {
-            Coupon::TYPE_PERCENT => (function () use ($priceCents, $coupon): int {
-                $discountRate = bcdiv((string) $coupon->getValue(), '100', 4);
-                $discountCents = bcmul((string) $priceCents, $discountRate, 0);
-
-                return (int) $discountCents;
-            })(),
-            Coupon::TYPE_FIXED => $coupon->getValue(),
-            default => 0,
+            Coupon::TYPE_PERCENT => $this->calculatePercentDiscount($priceCents, (string) $coupon->getValue()),
+            Coupon::TYPE_FIXED => $this->calculateFixedDiscount($priceCents, (string) $coupon->getValue()),
+            default => '0',
         };
     }
 
-    /*
-     * Example calculation:
-     * $priceCentsAsString = "10000"   // 100 € in cents
-     * $taxRateAsString    = "0.19"    // 19% tax
-     * $taxMultiplier      = bcadd('1', $taxRateAsString, 4) // 1 + 0.19 = 1.19
-     * $totalCentsWithTax  = bcmul($priceCentsAsString, $taxMultiplier, 0) // 10000 * 1.19 = 11900 cents (119 €)
+    /**
+     * Percent discount: priceCents * (percent / 100).
+     *
+     * EXAMPLE:
+     *  - priceCents = "10000", percentValue = "6" -> 10000 * 0.06 = 600
+     *
+     * @param numeric-string $priceCents
+     *
+     * @return numeric-string
      */
-    private function applyTax(int $priceCents, float $taxRate): int
+    private function calculatePercentDiscount(string $priceCents, string $percentValue): string
     {
-        $priceCentsAsString = (string) $priceCents;
-        $taxRateAsString = (string) $taxRate;
+        $fraction = bcdiv($percentValue, '100', self::BC_SCALE);
 
-        $taxMultiplier = bcadd('1', $taxRateAsString, 4);
-        $totalCentsWithTax = bcmul($priceCentsAsString, $taxMultiplier, 4);
+        return bcmul($priceCents, $fraction, self::BC_SCALE);
+    }
 
-        return (int) round((float) $totalCentsWithTax, 0, PHP_ROUND_HALF_UP);
+    /**
+     * Fixed discount: min(fixedValue, priceCents).
+     *
+     * EXAMPLE:
+     *  - priceCents = "10000", fixedValue = "600" -> 600
+     *
+     * @param numeric-string $priceCents
+     * @param numeric-string $fixedValue
+     *
+     * @return numeric-string
+     */
+    private function calculateFixedDiscount(string $priceCents, string $fixedValue): string
+    {
+        return bccomp($fixedValue, $priceCents, self::BC_SCALE) > 0
+            ? $priceCents
+            : $fixedValue;
+    }
+
+    /**
+     * Apply tax to the discounted price.
+     *
+     * EXAMPLE:
+     *  - discountedPrice = "9400"
+     *  - taxRate = 0.24
+     *  - taxAmount = 9400 * 0.24 = 2256
+     *  - taxedPrice = 9400 + 2256 = "11656"
+     *
+     * @param numeric-string $priceCents
+     *
+     * @return numeric-string
+     */
+    private function applyTax(string $priceCents, float $taxRate): string
+    {
+        $taxAmount = bcmul($priceCents, (string) $taxRate, self::BC_SCALE);
+
+        return bcadd($priceCents, $taxAmount, self::BC_SCALE);
     }
 }
