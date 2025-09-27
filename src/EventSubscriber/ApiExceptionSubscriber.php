@@ -50,8 +50,6 @@ class ApiExceptionSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Приводим сообщение исключения к массиву ошибок.
-     *
      * @return array<mixed>
      */
     private function normalizeErrors(string $rawMessage): array
