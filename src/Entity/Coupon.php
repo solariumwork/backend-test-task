@@ -16,7 +16,7 @@ class Coupon
     public const string TYPE_FIXED = 'fixed';
 
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: 'string', length: 50)]
     private string $code;
 
     #[ORM\Column(type: 'string', length: 10)]
@@ -40,6 +40,14 @@ class Coupon
     ) {
         if (!in_array($type, [self::TYPE_PERCENT, self::TYPE_FIXED], true)) {
             throw new \InvalidArgumentException('Invalid coupon type.');
+        }
+
+        if (self::TYPE_PERCENT === $type && ($value < 0 || $value > 100)) {
+            throw new \InvalidArgumentException('Percent coupon value must be between 0 and 100.');
+        }
+
+        if (self::TYPE_FIXED === $type && $value < 0) {
+            throw new \InvalidArgumentException('Fixed coupon value cannot be negative.');
         }
 
         $this->code = $code;

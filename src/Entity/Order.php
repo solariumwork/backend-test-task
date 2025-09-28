@@ -27,13 +27,13 @@ final class Order
     #[ORM\JoinColumn(name: 'coupon_id', referencedColumnName: 'code', nullable: true)]
     private ?Coupon $coupon;
 
-    #[ORM\Column(name: 'tax_number', type: 'string', length: 64)]
+    #[ORM\Column(name: 'tax_number', type: 'string', length: 30)]
     private string $taxNumber;
 
-    #[ORM\Column(name: 'payment_processor', type: 'string', length: 32)]
+    #[ORM\Column(name: 'payment_processor', type: 'string', length: 30)]
     private string $paymentProcessor;
 
-    #[ORM\Column(type: 'string', length: 32)]
+    #[ORM\Column(type: 'string', length: 30)]
     private string $paymentStatus;
 
     #[ORM\Embedded(class: Money::class, columnPrefix: 'price_')]
