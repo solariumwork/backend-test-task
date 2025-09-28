@@ -4,6 +4,8 @@ set -ex
 echo "Waiting for database..."
 sleep 5
 
+composer install --no-interaction --no-progress --prefer-dist --optimize-autoloader
+
 php bin/console doctrine:query:sql \
   "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'app' AND pid <> pg_backend_pid();" || true
 

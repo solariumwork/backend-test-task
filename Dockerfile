@@ -8,7 +8,6 @@ RUN apk add --no-cache postgresql-dev \
 # Xdebug
 RUN apk add --no-cache $PHPIZE_DEPS linux-headers \
     && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
     && apk del $PHPIZE_DEPS linux-headers
 
 COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
@@ -20,20 +19,23 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Run migration and fixtures
 COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh
+
+# Setup php app user
+ARG USER_ID=1000
+RUN adduser -u ${USER_ID} -D -H app
+
+# Psalm
+RUN mkdir -p /app/var/psalm/cache \
+    && chown -R app:app /app/var
 
 # Pre-commit hooks
 COPY scripts/install-hooks.sh /app/scripts/install-hooks.sh
 RUN chmod +x /app/scripts/install-hooks.sh
 
-# Setup php app user
-ARG USER_ID=1000
-RUN adduser -u ${USER_ID} -D -H app
 USER app
 
-# Copy project and create psalm cache
 COPY --chown=app . /app
-RUN mkdir -p /app/var/psalm/cache \
-    && chown -R app:app /app/var
 
 WORKDIR /app
 
