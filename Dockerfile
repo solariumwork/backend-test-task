@@ -1,5 +1,5 @@
 FROM php:8.3-cli-alpine AS sio_test
-RUN apk add --no-cache git zip bash
+RUN apk add --no-cache git zip bash postgresql-client
 
 # Setup php extensions
 RUN apk add --no-cache postgresql-dev \
@@ -15,11 +15,6 @@ COPY docker/php/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 # Composer
 ENV COMPOSER_CACHE_DIR=/tmp/composer-cache
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Run migration and fixtures
-COPY docker/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-RUN sed -i 's/\r$//' /usr/local/bin/docker-entrypoint.sh
 
 # Setup php app user
 ARG USER_ID=1000
@@ -41,4 +36,4 @@ WORKDIR /app
 
 EXPOSE 8337
 
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["php", "-S", "0.0.0.0:8337", "-t", "public", "public/index.php"]
