@@ -12,5 +12,7 @@ return (new Config())
         '@Symfony' => true,
         'array_syntax' => ['syntax' => 'short'],
         'no_unused_imports' => true,
+        'line_ending' => true,
     ])
-    ->setFinder($finder);
+    ->setFinder($finder)
+    ->setLineEnding("\n") ;
