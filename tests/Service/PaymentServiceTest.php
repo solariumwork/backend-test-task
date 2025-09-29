@@ -33,12 +33,9 @@ class PaymentServiceTest extends TestCase
         );
     }
 
-    public function testPaypalPaymentWithPercentCoupon(): void
+    public function testPaypalPayment(): void
     {
-        $originalPrice = 10000;
-        $discountPercent = 1000;
-        $expectedCents = (int) (($originalPrice * (1 - $discountPercent / 100)) * 100);
-
+        $expectedCents = 9000;
         $money = new Money($expectedCents);
 
         $this->paypalMock->expects($this->once())
@@ -48,12 +45,9 @@ class PaymentServiceTest extends TestCase
         $this->paymentService->pay($money, 'paypal');
     }
 
-    public function testStripePaymentWithFixedCoupon(): void
+    public function testStripePayment(): void
     {
-        $originalPrice = 500;
-        $discountFixed = 50;
-        $expectedCents = (($originalPrice - $discountFixed) * 100);
-
+        $expectedCents = 45000;
         $money = new Money($expectedCents);
 
         $this->stripeMock->expects($this->once())
@@ -67,7 +61,6 @@ class PaymentServiceTest extends TestCase
     public function testPaymentWith100PercentDiscount(): void
     {
         $expectedCents = 0;
-
         $money = new Money($expectedCents);
 
         $this->expectException(\RuntimeException::class);
