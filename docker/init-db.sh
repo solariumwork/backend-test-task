@@ -1,5 +1,5 @@
 #!/bin/sh
-set -ex
+set -e
 
 echo "Waiting for database..."
 until pg_isready -h database -p 5432 -U app; do
