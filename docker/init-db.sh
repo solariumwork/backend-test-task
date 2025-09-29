@@ -12,4 +12,4 @@ php bin/console doctrine:database:create --if-not-exists || true
 php bin/console doctrine:migrations:migrate --no-interaction || true
 
 echo "Loading fixtures..."
-php bin/console doctrine:fixtures:load --purge-with-truncate --no-interaction || trueW
+php bin/console doctrine:fixtures:load --purge-with-truncate --no-interaction || true
