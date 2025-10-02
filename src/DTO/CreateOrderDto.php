@@ -9,7 +9,7 @@ use App\Entity\Product;
 use App\ValueObject\Money;
 
 /** @psalm-suppress PossiblyUnusedProperty */
-final class CreateOrderDto
+final readonly class CreateOrderDto
 {
     public function __construct(
         public Product $product,

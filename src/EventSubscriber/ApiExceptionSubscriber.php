@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /** @psalm-suppress UnusedClass */
-class ApiExceptionSubscriber implements EventSubscriberInterface
+final readonly class ApiExceptionSubscriber implements EventSubscriberInterface
 {
     #[\Override]
     public static function getSubscribedEvents(): array

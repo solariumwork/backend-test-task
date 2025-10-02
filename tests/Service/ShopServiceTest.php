@@ -12,7 +12,7 @@ use App\Entity\Product;
 use App\Repository\CouponRepositoryInterface;
 use App\Repository\OrderRepositoryInterface;
 use App\Repository\ProductRepositoryInterface;
-use App\Service\PaymentService;
+use App\Service\PaymentServiceInterface;
 use App\Service\PriceCalculatorServiceInterface;
 use App\Service\ShopService;
 use App\ValueObject\Money;
@@ -25,23 +25,17 @@ final class ShopServiceTest extends TestCase
 {
     private ShopService $shopService;
 
-    /** @var ProductRepositoryInterface&MockObject */
-    private $productRepo;
+    private ProductRepositoryInterface&MockObject $productRepo;
 
-    /** @var CouponRepositoryInterface&MockObject */
-    private $couponRepo;
+    private CouponRepositoryInterface&MockObject $couponRepo;
 
-    /** @var PriceCalculatorServiceInterface&MockObject */
-    private $calculator;
+    private PriceCalculatorServiceInterface&MockObject $calculator;
 
-    /** @var PaymentService&MockObject */
-    private $paymentService;
+    private PaymentServiceInterface&MockObject $paymentService;
 
-    /** @var OrderRepositoryInterface&MockObject */
-    private $orderRepo;
+    private OrderRepositoryInterface&MockObject $orderRepo;
 
-    /** @var LoggerInterface&MockObject */
-    private $logger;
+    private LoggerInterface&MockObject $logger;
 
     #[\Override]
     protected function setUp(): void
@@ -49,7 +43,7 @@ final class ShopServiceTest extends TestCase
         $this->productRepo = $this->createMock(ProductRepositoryInterface::class);
         $this->couponRepo = $this->createMock(CouponRepositoryInterface::class);
         $this->calculator = $this->createMock(PriceCalculatorServiceInterface::class);
-        $this->paymentService = $this->createMock(PaymentService::class);
+        $this->paymentService = $this->createMock(PaymentServiceInterface::class);
         $this->orderRepo = $this->createMock(OrderRepositoryInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 

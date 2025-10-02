@@ -15,11 +15,10 @@ use Systemeio\TestForCandidates\PaymentProcessor\StripePaymentProcessor;
 class PaymentServiceTest extends TestCase
 {
     private PaymentService $paymentService;
-    /** @var PaypalPaymentProcessor&MockObject */
-    private $paypalMock;
 
-    /** @var StripePaymentProcessor&MockObject */
-    private $stripeMock;
+    private PaypalPaymentProcessor&MockObject $paypalMock;
+
+    private StripePaymentProcessor&MockObject $stripeMock;
 
     #[\Override]
     protected function setUp(): void

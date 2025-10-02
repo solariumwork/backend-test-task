@@ -9,7 +9,7 @@ use App\Entity\Product;
 use App\Enum\TaxRate;
 use App\ValueObject\Money;
 
-class PriceCalculatorService implements PriceCalculatorServiceInterface
+final readonly class PriceCalculatorService implements PriceCalculatorServiceInterface
 {
     private const int BC_SCALE = 8;
 
