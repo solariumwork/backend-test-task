@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
-use App\Enum\PaymentStatus;
+use App\Payment\Enum\PaymentStatus;
 use App\Repository\OrderRepository;
 use App\ValueObject\Money;
 use Doctrine\ORM\Mapping as ORM;

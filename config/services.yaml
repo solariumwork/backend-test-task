@@ -39,5 +39,13 @@ services:
     App\Repository\OrderRepositoryInterface: '@App\Repository\OrderRepository'
 
     App\Service\ShopServiceInterface: '@App\Service\ShopService'
-    App\Service\PaymentServiceInterface: '@App\Service\PaymentService'
     App\Service\PriceCalculatorServiceInterface: '@App\Service\PriceCalculatorService'
+
+    App\Payment\Adapter\:
+      resource: '../src/Payment/Adapter'
+
+    App\Payment\Service\PaymentService:
+      arguments:
+        $processors: !tagged_locator
+          tag: 'app.payment_processor'
+          index_by: 'alias'
