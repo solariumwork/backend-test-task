@@ -41,9 +41,6 @@ services:
     App\Service\ShopServiceInterface: '@App\Service\ShopService'
     App\Service\PriceCalculatorServiceInterface: '@App\Service\PriceCalculatorService'
 
-    App\Payment\Adapter\:
-      resource: '../src/Payment/Adapter'
-
     App\Payment\Service\PaymentService:
       arguments:
         $processors: !tagged_locator
