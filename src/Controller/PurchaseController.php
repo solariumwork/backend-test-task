@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\DTO\ErrorResponse;
 use App\DTO\PurchaseRequest;
+use App\DTO\PurchaseResponse;
 use App\Service\ShopServiceInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
@@ -30,58 +32,25 @@ final readonly class PurchaseController
         responses: [
             new OA\Response(
                 response: Response::HTTP_OK,
-                description: 'Returns the order details including ID, total amount, and currency',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'orderId', description: 'Unique ID of the order', type: 'integer', example: 101),
-                        new OA\Property(property: 'total', description: 'Total amount in euros', type: 'number', format: 'float', example: 49.99),
-                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string', example: 'EUR'),
-                    ],
-                    type: 'object'
-                )
+                description: 'Order details including ID, total amount, and currency',
+                content: new OA\JsonContent(ref: new Model(type: PurchaseResponse::class))
             ),
             new OA\Response(
                 response: Response::HTTP_UNPROCESSABLE_ENTITY,
-                description: 'Unprocessable Entity',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'errors',
-                            description: 'List of validation errors',
-                            type: 'array',
-                            items: new OA\Items(type: 'string', example: 'total: This value should be greater than 0.')
-                        ),
-                    ],
-                    type: 'object'
-                )
+                description: 'Validation errors',
+                content: new OA\JsonContent(ref: new Model(type: ErrorResponse::class))
             ),
         ]
     )]
     /**
      * Processes a purchase for a product and returns order details as JSON.
      *
-     * Delegates the business logic to ShopService. Exceptions such as invalid product,
-     * invalid coupon, or payment failure are caught by ApiExceptionSubscriber and returned
-     * as JSON with status 422 (Unprocessable Entity).
-     *
-     * @param PurchaseRequest $dto Validated purchase request DTO
-     *
-     * @return JsonResponse{
-     *     orderId: int,
-     *     total: float,
-     *     currency: string
-     * }
-     *
-     * @throws \Throwable only unexpected errors; all known exceptions are handled globally
+     * @throws \Throwable handled by ApiExceptionSubscriber and returned as 422
      */
     public function __invoke(PurchaseRequest $dto): JsonResponse
     {
         $order = $this->shopService->purchase($dto);
 
-        return new JsonResponse([
-            'orderId' => $order->getId(),
-            'total' => $order->getTotal()->getEuros(),
-            'currency' => $order->getTotal()->getCurrency(),
-        ], Response::HTTP_OK);
+        return new JsonResponse(PurchaseResponse::fromOrder($order), Response::HTTP_OK);
     }
 }

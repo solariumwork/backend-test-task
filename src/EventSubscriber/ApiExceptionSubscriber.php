@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\DTO\ErrorResponse;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +38,8 @@ final readonly class ApiExceptionSubscriber implements EventSubscriberInterface
             ? $exception->getStatusCode()
             : Response::HTTP_UNPROCESSABLE_ENTITY;
 
-        $event->setResponse(new JsonResponse(['errors' => $errors], $statusCode));
+        // @phpstan-ignore-next-line
+        $event->setResponse(new JsonResponse(new ErrorResponse($errors), $statusCode));
     }
 
     private function isApiRequest(Request $request): bool
