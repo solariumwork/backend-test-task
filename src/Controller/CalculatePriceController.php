@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\DTO\CalculatePriceRequest;
+use App\DTO\CalculatePriceResponse;
+use App\DTO\ErrorResponse;
 use App\Service\ShopServiceInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
@@ -30,45 +32,25 @@ final readonly class CalculatePriceController
         responses: [
             new OA\Response(
                 response: Response::HTTP_OK,
-                description: 'Returns the calculated price and currency',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'price', description: 'Total price', type: 'number', format: 'float'),
-                        new OA\Property(property: 'currency', description: 'Currency code', type: 'string', example: 'EUR'),
-                    ],
-                    type: 'object'
-                )
+                description: 'Calculated price and currency',
+                content: new OA\JsonContent(ref: new Model(type: CalculatePriceResponse::class))
             ),
             new OA\Response(
                 response: Response::HTTP_UNPROCESSABLE_ENTITY,
-                description: 'Unprocessable Entity',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'errors',
-                            description: 'List of validation errors',
-                            type: 'array',
-                            items: new OA\Items(type: 'string', example: 'total: This value should be greater than 0.')
-                        ),
-                    ],
-                    type: 'object'
-                )
+                description: 'Validation errors',
+                content: new OA\JsonContent(ref: new Model(type: ErrorResponse::class))
             ),
         ]
     )]
     /**
      * Calculates the price for a product and returns it as JSON.
      *
-     * @throws \Throwable Exceptions (invalid product, invalid coupon, etc.)
-     *                    are handled by ApiExceptionSubscriber and returned as 422 JSON responses.
+     * @throws \Throwable handled by ApiExceptionSubscriber and returned as 422
      */
     public function __invoke(CalculatePriceRequest $dto): JsonResponse
     {
         $total = $this->shopService->calculatePrice($dto);
 
-        return new JsonResponse([
-            'price' => $total->getEuros(),
-            'currency' => $total->getCurrency(),
-        ], Response::HTTP_OK);
+        return new JsonResponse(new CalculatePriceResponse($total), Response::HTTP_OK);
     }
 }
