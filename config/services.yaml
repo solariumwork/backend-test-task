@@ -46,3 +46,9 @@ services:
         $processors: !tagged_locator
           tag: 'app.payment_processor'
           index_by: 'alias'
+
+    App\Tax\Service\TaxRateService:
+      arguments:
+        $taxRates: !tagged_locator
+          tag: 'app.country_tax_rate'
+          index_by: 'alias'

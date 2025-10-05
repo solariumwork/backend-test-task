@@ -6,11 +6,15 @@ namespace App\Service;
 
 use App\Entity\Coupon;
 use App\Entity\Product;
-use App\Enum\TaxRate;
+use App\Tax\Service\TaxRateServiceInterface;
 use App\ValueObject\Money;
 
 final readonly class PriceCalculatorService implements PriceCalculatorServiceInterface
 {
+    public function __construct(private TaxRateServiceInterface $taxRateService)
+    {
+    }
+
     private const int BC_SCALE = 8;
 
     #[\Override]
@@ -44,8 +48,7 @@ final readonly class PriceCalculatorService implements PriceCalculatorServiceInt
             ? $this->applyDiscount($priceCents, $coupon)
             : $priceCents;
 
-        $taxRate = TaxRate::fromTaxNumber($taxNumber);
-        $taxedPrice = $this->applyTax($discountedPrice, $taxRate);
+        $taxedPrice = $this->applyTax($discountedPrice, $taxNumber);
 
         return (int) bcadd($taxedPrice, '0.5', 0);
     }
@@ -138,9 +141,10 @@ final readonly class PriceCalculatorService implements PriceCalculatorServiceInt
      *
      * @return numeric-string
      */
-    private function applyTax(string $priceCents, float $taxRate): string
+    private function applyTax(string $priceCents, string $taxNumber): string
     {
-        $taxAmount = bcmul($priceCents, (string) $taxRate, self::BC_SCALE);
+        $taxRate = $this->taxRateService->getTaxRate($taxNumber);
+        $taxAmount = bcmul($priceCents, $taxRate, self::BC_SCALE);
 
         return bcadd($priceCents, $taxAmount, self::BC_SCALE);
     }
