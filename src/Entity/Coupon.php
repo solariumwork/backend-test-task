@@ -16,7 +16,7 @@ class Coupon
     public const string TYPE_FIXED = 'fixed';
 
     #[ORM\Id]
-    #[ORM\Column(type: 'string', length: 50)]
+    #[ORM\Column(type: 'string', length: 50, unique: true)]
     private string $code;
 
     #[ORM\Column(type: 'string', length: 10)]
