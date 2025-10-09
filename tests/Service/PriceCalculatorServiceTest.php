@@ -7,6 +7,8 @@ namespace App\Tests\Service;
 use App\Entity\Coupon;
 use App\Entity\Product;
 use App\Service\PriceCalculatorService;
+use App\Tax\Exception\TaxRateException;
+use App\Tax\Service\TaxRateServiceInterface;
 use App\ValueObject\Money;
 use PHPUnit\Framework\TestCase;
 
@@ -18,7 +20,27 @@ class PriceCalculatorServiceTest extends TestCase
     #[\Override]
     protected function setUp(): void
     {
-        $this->calculator = new PriceCalculatorService();
+        $map = [
+            'DE' => '0.19',
+            'IT' => '0.22',
+            'FR' => '0.20',
+            'GR' => '0.24',
+        ];
+
+        $taxRateService = $this->createMock(TaxRateServiceInterface::class);
+        $taxRateService
+            ->method('getTaxRate')
+            ->willReturnCallback(function (string $taxNumber) use ($map) {
+                $prefix = strtoupper(substr($taxNumber, 0, 2));
+
+                if (!isset($map[$prefix])) {
+                    throw new TaxRateException('Invalid tax number');
+                }
+
+                return $map[$prefix]; // возвращаем numeric-string
+            });
+
+        $this->calculator = new PriceCalculatorService($taxRateService);
     }
 
     public function testCalculateWithoutCoupon(): void
@@ -88,7 +110,7 @@ class PriceCalculatorServiceTest extends TestCase
 
     public function testInvalidTaxNumberThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(TaxRateException::class);
         $this->expectExceptionMessage('Invalid tax number');
 
         $product = new Product('TestPhone', new Money(10000));

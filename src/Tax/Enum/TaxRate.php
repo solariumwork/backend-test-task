@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Enum;
+namespace App\Tax\Enum;
 
 enum TaxRate: string
 {
@@ -11,6 +11,9 @@ enum TaxRate: string
     case FRANCE = '0.20';
     case GREECE = '0.24';
 
+    /**
+     * @psalm-suppress PossiblyUnusedReturnValue
+     */
     public static function fromTaxNumber(string $taxNumber): float
     {
         return (float) match (true) {
